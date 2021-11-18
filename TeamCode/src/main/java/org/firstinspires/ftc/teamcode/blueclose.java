@@ -34,6 +34,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
  * It uses the common Pushbot hardware class to define the drive on the robot.
@@ -78,11 +88,55 @@ public class blueclose extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
+    //  The GAIN constants set the relationship between the measured position error,
+    //  and how much power is applied to the drive motors.  Drive = Error * Gain
+    //  Make these values smaller for smoother control.
+    final double SPEED_GAIN =   0.02 ;   //  Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double TURN_GAIN  =   0.01 ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MM_PER_INCH = 25.40 ;   //  Metric conversion
+    private static final String VUFORIA_KEY = "AU2ZVVD/////AAABmWSnWzlvdECDh0CawWRMh50kTOol0b5i6u8TJ9mYkhAojzXIoOAOVA7kFQAmVX8CWYdcpRjhQUnpcWViN2ckinEOTF1xTzWbTv6pqSuYaUgSwNKQUy1nipKxdEpTCv6BW+17wHICNqIJVCblf5CCvgg79QnDk1G503iGNlmz8a9wRZIYadFQzWBK7Ps/sWMliCnRgUe5KAVfWAs/K+0DzveH/Gq82hE9E1GIXusodMsZJzGlmQKEWcIgfzuWYzzlYdJpw6eNPSVIK5lisdkBfkzJbsWSIsOuKJOzJMwB894qq7OB/nMJCaWT3qseZamRZKm0wpgVng4x0gW/ZccKzl/4jDDeuJOa2K4MSfCDTPn+";
+    VuforiaLocalizer vuforia    = null;
+    OpenGLMatrix targetPose     = null;
+    String targetName           = "";
+
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        //vuforia
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+
+        // Turn off Extended tracking.  Set this true if you want Vuforia to track beyond the target.
+        parameters.useExtendedTracking = false;
+
+        // Connect to the camera we are to use.  This name must match what is set up in Robot Configuration
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Load the trackable objects from the Assets file, and give them meaningful names
+        VuforiaTrackables targetsFreightFrenzy = this.vuforia.loadTrackablesFromAsset("FreightFrenzy");
+        targetsFreightFrenzy.get(0).setName("Blue Storage");
+        targetsFreightFrenzy.get(1).setName("Blue Alliance Wall");
+        targetsFreightFrenzy.get(2).setName("Red Storage");
+        targetsFreightFrenzy.get(3).setName("Red Alliance Wall");
+
+        // Start tracking targets in the background
+        targetsFreightFrenzy.activate();
+
+
+
         waitForStart();
 
+        boolean targetFound     = false;    // Set to true when a target is detected by Vuforia
+        double  targetRange     = 0;        // Distance from camera to target in Inches
+        double  targetBearing   = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
+        double  drive           = 0;        // Desired forward power (-1 to +1)
+        double  turn            = 0;        // Desired turning power (-1 to +1)
         //vuforia stuff here
 
         //the below program assumes we start on blue team
@@ -91,7 +145,44 @@ public class blueclose extends LinearOpMode {
         //ASSUMES BLUE TEAM CLOSE TO CAROUSEL, ITS FACING FORWARD TO CAROUSEL
         //strafe left a bit
 
+        targetFound = false;
+        for (VuforiaTrackable trackable : targetsFreightFrenzy)
+        {
+            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())
+            {
+                targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
 
+                // if we have a target, process the "pose" to determine the position of the target relative to the robot.
+                if (targetPose != null)
+                {
+                    targetFound = true;
+                    targetName  = trackable.getName();
+                    VectorF trans = targetPose.getTranslation();
+
+                    // Extract the X & Y components of the offset of the target relative to the robot
+                    double targetX = trans.get(0) / MM_PER_INCH; // Image X axis
+                    double targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
+
+                    // target range is based on distance from robot position to origin (right triangle).
+                    targetRange = Math.hypot(targetX, targetY);
+
+                    // target bearing is based on angle formed between the X axis and the target range line
+                    targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
+
+                    break;  // jump out of target tracking loop if we find a target.
+                }
+            }
+        }
+
+        // Tell the driver what we see, and what to do.
+        if (targetFound) {
+            telemetry.addData(">","HOLD Left-Bumper to Drive to Target\n");
+            telemetry.addData("Target", " %s", targetName);
+            telemetry.addData("Range",  "%5.1f inches", targetRange);
+            telemetry.addData("Bearing","%3.0f degrees", targetBearing);
+        } else {
+            telemetry.addData(">","Drive using joystick to find target\n");
+        }
         //move(1,'y',11);
         reset();
         //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
@@ -103,11 +194,15 @@ public class blueclose extends LinearOpMode {
         robot.carousel.setPower(0);
         //drive forward OR to backward
         reset();
-        //move(1, 'f',1500);
-        move(1,'b',50);
-        reset();
-        //move(1,'y',15);
-        reset();
+         //move(1, 'f',1500);
+         move(1,'b',20);
+         reset();
+         if (targetFound){
+             move(1,'3',targetRange);
+         }
+//        reset();
+//        //move(1,'y',15);
+//        reset();
 
         motorStop();
     }
