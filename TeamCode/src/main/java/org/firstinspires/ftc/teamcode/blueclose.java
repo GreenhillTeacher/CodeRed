@@ -44,6 +44,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
  * It uses the common Pushbot hardware class to define the drive on the robot.
@@ -144,14 +153,25 @@ public class blueclose extends LinearOpMode {
         //distance is how many inches you wanna go
         //ASSUMES BLUE TEAM CLOSE TO CAROUSEL, ITS FACING FORWARD TO CAROUSEL
         //strafe left a bit
+        reset();
+        //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
+        move(1,'y',25.5);
+        reset();
 
+        robot.carousel.setPower(0.8);
+        sleep(2500);
+        robot.carousel.setPower(0);
+        //drive forward OR to backward
+        reset();
         targetFound = false;
         for (VuforiaTrackable trackable : targetsFreightFrenzy)
         {
             if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())
             {
                 targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
-
+                //MOVE BACKWARD LOOKING FOR THE PICTURE
+                move(1,'b',5);
+                reset();
                 // if we have a target, process the "pose" to determine the position of the target relative to the robot.
                 if (targetPose != null)
                 {
@@ -184,22 +204,11 @@ public class blueclose extends LinearOpMode {
             telemetry.addData(">","Drive using joystick to find target\n");
         }
         //move(1,'y',11);
-        reset();
-        //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
-        move(1,'y',25.5);
-        reset();
 
-        robot.carousel.setPower(0.8);
-        sleep(2500);
-        robot.carousel.setPower(0);
-        //drive forward OR to backward
-        reset();
          //move(1, 'f',1500);
-         move(1,'b',20);
-         reset();
-         if (targetFound){
+
              move(1,'3',targetRange);
-         }
+
 //        reset();
 //        //move(1,'y',15);
 //        reset();
@@ -486,7 +495,7 @@ public class blueclose extends LinearOpMode {
 
                 break;
             case '3':
-                // go back to the right
+                // go back right
 
                 robot.frontLeft.setTargetPosition(0);
                 robot.backLeft.setTargetPosition((int) -ticks);
