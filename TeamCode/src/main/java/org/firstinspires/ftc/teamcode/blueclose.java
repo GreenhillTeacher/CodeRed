@@ -155,7 +155,7 @@ public class blueclose extends LinearOpMode {
         //strafe left a bit
         reset();
         //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
-        move(1,'y',25.5);
+        move(1,'y',22);
         reset();
 
         robot.carousel.setPower(0.8);
@@ -163,33 +163,38 @@ public class blueclose extends LinearOpMode {
         robot.carousel.setPower(0);
         //drive forward OR to backward
         reset();
+
+        move(1,'l',5);
+
+
+        reset();
         targetFound = false;
-        for (VuforiaTrackable trackable : targetsFreightFrenzy)
-        {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())
-            {
-                targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
-                //MOVE BACKWARD LOOKING FOR THE PICTURE
-                move(1,'b',5);
-                reset();
-                // if we have a target, process the "pose" to determine the position of the target relative to the robot.
-                if (targetPose != null)
-                {
-                    targetFound = true;
-                    targetName  = trackable.getName();
-                    VectorF trans = targetPose.getTranslation();
+        while( !targetFound ) {
+            move(1, 'b', 10);
+            reset();
+            for (VuforiaTrackable trackable : targetsFreightFrenzy) {
+                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                    targetPose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getVuforiaCameraFromTarget();
+                    //MOVE BACKWARD LOOKING FOR THE PICTURE
 
-                    // Extract the X & Y components of the offset of the target relative to the robot
-                    double targetX = trans.get(0) / MM_PER_INCH; // Image X axis
-                    double targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
+                    // if we have a target, process the "pose" to determine the position of the target relative to the robot.
+                    if (targetPose != null) {
+                        targetFound = true;
+                        targetName = trackable.getName();
+                        VectorF trans = targetPose.getTranslation();
 
-                    // target range is based on distance from robot position to origin (right triangle).
-                    targetRange = Math.hypot(targetX, targetY);
+                        // Extract the X & Y components of the offset of the target relative to the robot
+                        double targetX = trans.get(0) / MM_PER_INCH; // Image X axis
+                        double targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
 
-                    // target bearing is based on angle formed between the X axis and the target range line
-                    targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
+                        // target range is based on distance from robot position to origin (right triangle).
+                        targetRange = Math.hypot(targetX, targetY);
 
-                    break;  // jump out of target tracking loop if we find a target.
+                        // target bearing is based on angle formed between the X axis and the target range line
+                        targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
+
+                        break;  // jump out of target tracking loop if we find a target.
+                    }
                 }
             }
         }
@@ -205,13 +210,15 @@ public class blueclose extends LinearOpMode {
         }
         //move(1,'y',11);
 
-         //move(1, 'f',1500);
+         //move(1,
+        // \'f',1500);
 
              move(1,'3',targetRange);
 
 //        reset();
 //        //move(1,'y',15);
 //        reset();
+        //y = strafef eleft
 
         motorStop();
     }
@@ -228,7 +235,7 @@ public class blueclose extends LinearOpMode {
         robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
@@ -291,6 +298,12 @@ public class blueclose extends LinearOpMode {
 
                 while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
                 {
+                    telemetry.clear();
+                    telemetry.addData("Front Left Pos", robot.frontLeft.getCurrentPosition());
+                    telemetry.addData("Front Right Pos", robot.frontRight.getCurrentPosition());
+                    telemetry.addData("Back Left Pos", robot.backLeft.getCurrentPosition());
+                    telemetry.addData("Back Right (Mephistopheles) Pos", robot.backRight.getCurrentPosition());
+                    telemetry.update();
 
                 }
                 motorStop();
@@ -302,7 +315,7 @@ public class blueclose extends LinearOpMode {
                 break;
 
             case 'r':
-                //to go right
+                //to turn clockwise
 
             robot.frontLeft.setTargetPosition((int)ticks);
             robot.backLeft.setTargetPosition((int)ticks);
@@ -332,7 +345,7 @@ public class blueclose extends LinearOpMode {
 
             break;
             case 'l':
-                // to go left
+                // to turn counter clockwise
 
             robot.frontLeft.setTargetPosition((int)ticks);
             robot.backLeft.setTargetPosition((int) -ticks);
@@ -352,7 +365,12 @@ public class blueclose extends LinearOpMode {
 
             while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
             {
-
+                telemetry.clear();
+                telemetry.addData("Front Left Pos", robot.frontLeft.getCurrentPosition());
+                telemetry.addData("Front Right Pos", robot.frontRight.getCurrentPosition());
+                telemetry.addData("Back Left Pos", robot.backLeft.getCurrentPosition());
+                telemetry.addData("Back Right (Mephistopheles) Pos", robot.backRight.getCurrentPosition());
+                telemetry.update();
             }
             motorStop();
             robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -526,7 +544,7 @@ public class blueclose extends LinearOpMode {
                 break;
 
             case '4':
-
+//back left
                 robot.frontLeft.setTargetPosition((int) -ticks);
                 robot.backLeft.setTargetPosition(0);
                 robot.frontRight.setTargetPosition(0);
