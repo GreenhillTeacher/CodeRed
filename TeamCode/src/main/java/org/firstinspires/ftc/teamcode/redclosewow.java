@@ -43,16 +43,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
  * It uses the common Pushbot hardware class to define the drive on the robot.
@@ -80,8 +70,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Blue - Direct Duck Retrieval", group="Blue Auton")
-public class blueclose extends LinearOpMode {
+@Autonomous(name="Red - Camera Duck Retrieval", group="Blue Auton")
+public class redclosewow extends LinearOpMode {
     public int x;
     public int y;
 
@@ -155,22 +145,22 @@ public class blueclose extends LinearOpMode {
         //strafe left a bit
         reset();
         //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
-        move(1,'y',20);
+        move(0.8,'f',20);
         reset();
 
-        robot.carousel.setPower(0.5);
+        robot.carousel.setPower(-0.5);
         sleep(2500);
         robot.carousel.setPower(0);
         //drive forward OR to backward
         reset();
 
-        move(1,'l',5);
+        move(1,'r',23);
 
 
         reset();
         targetFound = false;
         while( !targetFound ) {
-            move(1, 'b', 2);
+            move(1, 'f', 2);
             reset();
             for (VuforiaTrackable trackable : targetsFreightFrenzy) {
                 if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
@@ -210,8 +200,10 @@ public class blueclose extends LinearOpMode {
         }
         telemetry.update();
         //move(1,'b',2);
-
+        move(1,'f',7);
+        reset();
         move(1,'y',targetRange);
+
         //move(1,'y',11);
 
          //move(1,
@@ -446,6 +438,7 @@ public class blueclose extends LinearOpMode {
             robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             break;
+
             default:
                 motorStop();
         }
