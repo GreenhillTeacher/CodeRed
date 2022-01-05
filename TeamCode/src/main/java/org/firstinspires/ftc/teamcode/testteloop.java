@@ -30,13 +30,9 @@ public class testteloop extends OpMode {
        // double v4 = r * Math.cos(robotAngle) - rightX;
 
         robot.frontLeft.setPower(1);
-        sleep(1000);
         robot.frontRight.setPower(1);
-        sleep(1000);
         robot.backLeft.setPower(1);
-        sleep(1000);
         robot.backRight.setPower(1);
-        sleep(1000);
 
 
         //we assign the power to the actual motors further down in the code, so that we are able to reduce the power using the left trigger.
