@@ -7,8 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // Hardware class for the Greenhill 3 testbot
+// This hardware is for INFERNO REBORN, the robot we were working on as of January 8, 2022.
 
-public class testhardware
+public class rebornHardware
 {
     /* Public OpMode members. */
     public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null;
@@ -16,29 +17,29 @@ public class testhardware
     //public CRServo extenderServo = null;
     //public Servo grabberServo = null;
 
-    public static final double grabber_min = 0;
-    public static final double grabber_max = 0.75;
+//    public static final double grabber_min = 0;
+//    public static final double grabber_max = 0.75;
 
     /* Constructor */
-    public testhardware(){
+    public rebornHardware(){
 
     }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap hwMap) {
         // Define and Initialize Devices
-        frontLeft  = hwMap.get(DcMotor.class, "front_left");
-        frontRight = hwMap.get(DcMotor.class, "front_right");
-        backLeft   = hwMap.get(DcMotor.class, "back_left");
-        backRight  = hwMap.get(DcMotor.class, "back_right");
+        frontLeft  = hwMap.get(DcMotor.class, "frontLeft");
+        frontRight = hwMap.get(DcMotor.class, "frontRight");
+        backLeft   = hwMap.get(DcMotor.class, "backLeft");
+        backRight  = hwMap.get(DcMotor.class, "backRight");
 
 
 
         // Set Direction
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        backLeft.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        backRight.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        backLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        backRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
         frontLeft.setPower(0);

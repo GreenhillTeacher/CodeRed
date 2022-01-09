@@ -5,9 +5,9 @@ import static android.os.SystemClock.sleep;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="test_TeleOp")
+@TeleOp(name="test_Forward", group = "reborn")
 public class testteloop extends OpMode {
-    testhardware robot = new testhardware();
+    rebornHardware robot = new rebornHardware();
 
     @Override
     public void init() {

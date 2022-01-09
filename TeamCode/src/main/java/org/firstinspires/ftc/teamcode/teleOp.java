@@ -47,13 +47,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="teleOp", group="teleop")
+@TeleOp(name="teleOpTest-Mechanum", group="reborn")
 //@Disabled
 public class teleOp extends OpMode {
 
-    mecanumHardware robot = new mecanumHardware();
+    rebornHardware robot = new rebornHardware();
     // Declare OpMode members.
-    private float drive = 1f;
+    private float speedModifier = .5f;
+    private float reductionModifier = .3f;//the amount that the speed will be decreased in precision mode. Should be < 1
+    private float turboModifier = 1.5f;// the amount that the speed will be increased in turbo mode. Must be <2. No increase is 1.
+    private float precisionActive = 1f;
+    private float turnReduction = .5f;//reduces the speed of turning. <1 to reduce. 1 if to leave as normal
     //private float BRDrive = 1f;
 
     @Override
@@ -78,21 +82,33 @@ public class teleOp extends OpMode {
         //variableswrw3
         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
         double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-        double rightX = -gamepad1.right_stick_x;
+        double rightX = -gamepad1.right_stick_x * turnReduction;
         final double v1 = r * Math.cos(robotAngle) + rightX;
         final double v2 = r * Math.sin(robotAngle) - rightX;
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
-        robot.frontLeft.setPower(-drive * v1);
-        robot.frontRight.setPower(-drive * v2);
-        robot.backLeft.setPower(-drive * v3);
-        robot.backRight.setPower(-drive * v4);
 
-        telemetry.addData("fLPower", -drive * v1);
-        telemetry.addData("fRPower", -drive * v2);
-        telemetry.addData("bLPower", -drive * v3);
-        telemetry.addData("bRPower", -drive * v4);
+        if (gamepad1.left_bumper){//if the left bumper is pressed, it multiplies the total power by the precision driving modifer
+            precisionActive = reductionModifier;
+        }
+        else if (gamepad1.right_bumper){
+            precisionActive = turboModifier;//right bumper = turbo mode (for crossing the barriers)
+        }
+        else {
+            precisionActive = 1f; //no modifier
+        }
+
+
+        robot.frontLeft.setPower(-speedModifier * v1 * precisionActive);
+        robot.frontRight.setPower(-speedModifier * v2 * precisionActive);
+        robot.backLeft.setPower(-speedModifier * v3 * precisionActive);
+        robot.backRight.setPower(-speedModifier * v4 * precisionActive);
+
+        telemetry.addData("fLPower", -speedModifier * v1 * precisionActive);
+        telemetry.addData("fRPower", -speedModifier * v2 * precisionActive);
+        telemetry.addData("bLPower", -speedModifier * v3 * precisionActive);
+        telemetry.addData("bRPower", -speedModifier * v4 * precisionActive);
 
         telemetry.addData("Encoder port 1 back left",  robot.backLeft.getCurrentPosition());
         telemetry.addData("Encoder port 2 front right", robot.frontRight.getCurrentPosition());
