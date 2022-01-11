@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="test_Forward", group = "reborn")
-public class testteloop extends OpMode {
+public class rebornTestForward extends OpMode {
     rebornHardware robot = new rebornHardware();
 
     @Override

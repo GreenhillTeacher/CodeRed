@@ -49,7 +49,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="teleOpTest-Mechanum", group="reborn")
 //@Disabled
-public class teleOp extends OpMode {
+public class rebornTeleOp extends OpMode {
 
     rebornHardware robot = new rebornHardware();
     // Declare OpMode members.
@@ -79,43 +79,61 @@ public class teleOp extends OpMode {
 
     public void mecanumMove()
     {
-        //variableswrw3
-        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-        double rightX = -gamepad1.right_stick_x * turnReduction;
-        final double v1 = r * Math.cos(robotAngle) + rightX;
-        final double v2 = r * Math.sin(robotAngle) - rightX;
-        final double v3 = r * Math.sin(robotAngle) + rightX;
-        final double v4 = r * Math.cos(robotAngle) - rightX;
+        //wheel code
+        {
+            //variables
+            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+            double rightX = -gamepad1.right_stick_x * turnReduction;
+            final double v1 = r * Math.cos(robotAngle) + rightX;
+            final double v2 = r * Math.sin(robotAngle) - rightX;
+            final double v3 = r * Math.sin(robotAngle) + rightX;
+            final double v4 = r * Math.cos(robotAngle) - rightX;
 
 
-        if (gamepad1.left_bumper){//if the left bumper is pressed, it multiplies the total power by the precision driving modifer
-            precisionActive = reductionModifier;
+            if (gamepad1.left_bumper) {//if the left bumper is pressed, it multiplies the total power by the precision driving modifer
+                precisionActive = reductionModifier;
+            } else if (gamepad1.right_bumper) {
+                precisionActive = turboModifier;//right bumper = turbo mode (for crossing the barriers)
+            } else {
+                precisionActive = 1f; //no modifier
+            }
+
+
+            robot.frontLeft.setPower(-speedModifier * v1 * precisionActive);
+            robot.frontRight.setPower(-speedModifier * v2 * precisionActive);
+            robot.backLeft.setPower(-speedModifier * v3 * precisionActive);
+            robot.backRight.setPower(-speedModifier * v4 * precisionActive);
+
+            telemetry.addData("fLPower", -speedModifier * v1 * precisionActive);
+            telemetry.addData("fRPower", -speedModifier * v2 * precisionActive);
+            telemetry.addData("bLPower", -speedModifier * v3 * precisionActive);
+            telemetry.addData("bRPower", -speedModifier * v4 * precisionActive);
+
+            telemetry.addData("Encoder port 1 back left", robot.backLeft.getCurrentPosition());
+            telemetry.addData("Encoder port 2 front right", robot.frontRight.getCurrentPosition());
+            telemetry.addData("Encoder port 3 back right", robot.backRight.getCurrentPosition());
+            telemetry.addData("Encoder port 4 back left", robot.backLeft.getCurrentPosition());
+
         }
-        else if (gamepad1.right_bumper){
-            precisionActive = turboModifier;//right bumper = turbo mode (for crossing the barriers)
+
+        if (gamepad1.dpad_down){
+            robot.rotateRight.setPower(.2);
+            robot.rotateLeft.setPower(.2);
+            telemetry.addData("Rotator State", "Up");
+        }
+        else if (gamepad1.dpad_up){
+            robot.rotateRight.setPower(-.2);
+            robot.rotateLeft.setPower(-.2);
+            telemetry.addData("Rotator State", "Down");
+
         }
         else {
-            precisionActive = 1f; //no modifier
+            robot.rotateRight.setPower(0);
+            robot.rotateLeft.setPower(0);
+            telemetry.addData("Rotator State", "Off");
+
         }
-
-
-        robot.frontLeft.setPower(-speedModifier * v1 * precisionActive);
-        robot.frontRight.setPower(-speedModifier * v2 * precisionActive);
-        robot.backLeft.setPower(-speedModifier * v3 * precisionActive);
-        robot.backRight.setPower(-speedModifier * v4 * precisionActive);
-
-        telemetry.addData("fLPower", -speedModifier * v1 * precisionActive);
-        telemetry.addData("fRPower", -speedModifier * v2 * precisionActive);
-        telemetry.addData("bLPower", -speedModifier * v3 * precisionActive);
-        telemetry.addData("bRPower", -speedModifier * v4 * precisionActive);
-
-        telemetry.addData("Encoder port 1 back left",  robot.backLeft.getCurrentPosition());
-        telemetry.addData("Encoder port 2 front right", robot.frontRight.getCurrentPosition());
-        telemetry.addData("Encoder port 3 back right", robot.backRight.getCurrentPosition());
-        telemetry.addData("Encoder port 4 back left", robot.backLeft.getCurrentPosition());
-
-
         telemetry.update();
     }
 }
