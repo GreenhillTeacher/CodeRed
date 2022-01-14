@@ -53,6 +53,8 @@ public class rebornTeleOp extends OpMode {
 
     rebornHardware robot = new rebornHardware();
     // Declare OpMode members.
+
+    //methods to control the speed of the robot.
     private float speedModifier = .5f;
     private float reductionModifier = .3f;//the amount that the speed will be decreased in precision mode. Should be < 1
     private float turboModifier = 1.5f;// the amount that the speed will be increased in turbo mode. Must be <2. No increase is 1.
@@ -79,7 +81,9 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
-        //wheel code
+        //======================================
+        //------------WHEEL CODE----------------
+        //======================================
         {
             //variables
             double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
@@ -117,14 +121,20 @@ public class rebornTeleOp extends OpMode {
 
         }
 
-        if (gamepad1.dpad_down){
-            robot.rotateRight.setPower(.2);
-            robot.rotateLeft.setPower(.2);
+        telemetry.addLine();
+
+        //======================================
+        //----------CLAW ROTATOR----------------
+        //======================================
+
+        if (gamepad1.dpad_left){
+            robot.rotateRight.setPower(.2*precisionActive);
+            robot.rotateLeft.setPower(.2*precisionActive);
             telemetry.addData("Rotator State", "Up");
         }
-        else if (gamepad1.dpad_up){
-            robot.rotateRight.setPower(-.2);
-            robot.rotateLeft.setPower(-.2);
+        else if (gamepad1.dpad_right){
+            robot.rotateRight.setPower(-.2*precisionActive);
+            robot.rotateLeft.setPower(-.2*precisionActive);
             telemetry.addData("Rotator State", "Down");
 
         }
@@ -134,6 +144,37 @@ public class rebornTeleOp extends OpMode {
             telemetry.addData("Rotator State", "Off");
 
         }
+
+        //======================================
+        //----------LIFT CONTROL----------------
+        //======================================
+
+        if (gamepad1.dpad_up){
+            robot.liftMotor.setPower(.2);
+            telemetry.addData("Lift State", "Goin' Up");
+        }
+        else if (gamepad1.dpad_down){
+            robot.liftMotor.setPower(-.2);
+            telemetry.addData("Lift State", "Goin' Down");
+        }
+        else {
+            robot.liftMotor.setPower(0);
+            telemetry.addData("Lift State", "Procrastinating");//procrastinating = not doin' anythin
+        }
+
+        //======================================
+        //----------CLAW ACTIVATION-------------
+        //======================================
+
+        if (gamepad1.right_trigger>.1){
+            robot.clawServo.setPosition(0);
+            telemetry.addData("Claw State", "Squeeeze");//squeeze is close
+        }
+        else{
+            robot.clawServo.setPosition(.5);
+            telemetry.addData("Claw State", "Sigh");//sigh is release
+        }
+
         telemetry.update();
     }
 }
