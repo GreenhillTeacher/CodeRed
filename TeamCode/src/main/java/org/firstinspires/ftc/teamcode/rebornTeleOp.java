@@ -124,25 +124,42 @@ public class rebornTeleOp extends OpMode {
         telemetry.addLine();
 
         //======================================
+        //----------QUACK DELIVERY--------------
+        //======================================
+
+        if (gamepad1.y){
+            robot.duckSpinner.setPower(1);
+            telemetry.addData("Duck Spinner", "Wheeeee");
+        }
+        else if (gamepad1.x){
+            robot.duckSpinner.setPower(-1);
+            telemetry.addData("Duck Spinner", "Down");
+
+        }
+        else {
+            robot.duckSpinner.setPower(0);
+            telemetry.addData("Duck Spinner", "Off");
+        }
+
+        //======================================
         //----------CLAW ROTATOR----------------
         //======================================
 
         if (gamepad1.dpad_left){
-            robot.rotateRight.setPower(.2*precisionActive);
-            robot.rotateLeft.setPower(.2*precisionActive);
-            telemetry.addData("Rotator State", "Up");
-        }
-        else if (gamepad1.dpad_right){
             robot.rotateRight.setPower(-.2*precisionActive);
             robot.rotateLeft.setPower(-.2*precisionActive);
             telemetry.addData("Rotator State", "Down");
+        }
+        else if (gamepad1.dpad_right){
+            robot.rotateRight.setPower(.15*precisionActive);
+            robot.rotateLeft.setPower(.15*precisionActive);
+            telemetry.addData("Rotator State", "Up");
 
         }
         else {
             robot.rotateRight.setPower(0);
             robot.rotateLeft.setPower(0);
             telemetry.addData("Rotator State", "Off");
-
         }
 
         //======================================

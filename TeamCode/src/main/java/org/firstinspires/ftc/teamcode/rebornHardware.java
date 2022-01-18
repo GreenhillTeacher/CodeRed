@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class rebornHardware
 {
     /* Public OpMode members. */
-    public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, liftMotor = null;
+    public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, liftMotor = null, duckSpinner = null;
     //public DcMotor  pulleyMotor0 = null, pulleyMotor1=null, carousel = null;
     //public CRServo extenderServo = null;
     public Servo clawServo = null;
@@ -36,6 +36,7 @@ public class rebornHardware
         rotateRight = hwMap.get(DcMotor.class, "rotateRight");
 
         liftMotor = hwMap.get(DcMotor.class, "liftMotor");
+        duckSpinner = hwMap.get(DcMotor.class, "duckSpinner");
 
 
         clawServo = hwMap.get(Servo.class, "clawServo");
@@ -46,19 +47,24 @@ public class rebornHardware
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         backRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        rotateLeft.setDirection(DcMotor.Direction.REVERSE);
-        rotateRight.setDirection(DcMotor.Direction.FORWARD);
 
-        liftMotor.setDirection(DcMotorSimple.Direction.FORWARD);//currently a guess
+        rotateLeft.setDirection(DcMotor.Direction.FORWARD);
+        rotateRight.setDirection(DcMotor.Direction.REVERSE);
+
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);//currently a guess
+        duckSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set all motors to zero power
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
         backRight.setPower(0);
+
         rotateLeft.setPower(0);
         rotateRight.setPower(0);
+
         liftMotor.setPower(0);
+        duckSpinner.setPower(0);
         // RUN TO POSITION
         // Set all motors to run with encoders if applicable.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -70,6 +76,7 @@ public class rebornHardware
         rotateRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//doesnt have an encoder as of 1/13, but will eventually
+        duckSpinner.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
