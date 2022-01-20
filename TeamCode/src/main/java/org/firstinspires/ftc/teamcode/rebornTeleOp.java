@@ -47,7 +47,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="teleOpTest-Mechanum", group="reborn")
+@TeleOp(name="teleOpTest-Mechanum", group="reborn") // i will come soon. when the 3d print is done, make sure u watch ur back
 //@Disabled
 public class rebornTeleOp extends OpMode {
 
@@ -59,7 +59,7 @@ public class rebornTeleOp extends OpMode {
     private float reductionModifier = .3f;//the amount that the speed will be decreased in precision mode. Should be < 1
     private float turboModifier = 1.5f;// the amount that the speed will be increased in turbo mode. Must be <2. No increase is 1.
     private float precisionActive = 1f;
-    private float turnReduction = .5f;//reduces the speed of turning. <1 to reduce. 1 if to leave as normal
+    private float turnReduction = .5f;//reduces the speed of turning. <1 to reduce. 1 if to leave as normal> yuh
     //private float BRDrive = 1f;
 
     @Override
@@ -86,12 +86,12 @@ public class rebornTeleOp extends OpMode {
         //======================================
         {
             //variables
-            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y); //ur mom is watching you from the ceiling. dont look up...
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
             double rightX = -gamepad1.right_stick_x * turnReduction;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
-            final double v3 = r * Math.sin(robotAngle) + rightX;
+            final double v3 = r * Math.sin(robotAngle) + rightX; //the swedes are coming 4 u soon
             final double v4 = r * Math.cos(robotAngle) - rightX;
 
 
@@ -133,12 +133,12 @@ public class rebornTeleOp extends OpMode {
         }
         else if (gamepad1.x){
             robot.duckSpinner.setPower(-1);
-            telemetry.addData("Duck Spinner", "Down");
+            telemetry.addData("Duck Spinner", "Down"); //hello. i am watching.
 
         }
         else {
             robot.duckSpinner.setPower(0);
-            telemetry.addData("Duck Spinner", "Off");
+            telemetry.addData("Duck Spinner", "Off"); //ripped hamilton is near
         }
 
         //======================================
@@ -148,7 +148,7 @@ public class rebornTeleOp extends OpMode {
         if (gamepad1.dpad_left){
             robot.rotateRight.setPower(-.2*precisionActive);
             robot.rotateLeft.setPower(-.2*precisionActive);
-            telemetry.addData("Rotator State", "Down");
+            telemetry.addData("Rotator State", "Down"); //be careful wherever you go.
         }
         else if (gamepad1.dpad_right){
             robot.rotateRight.setPower(.15*precisionActive);
@@ -159,24 +159,28 @@ public class rebornTeleOp extends OpMode {
         else {
             robot.rotateRight.setPower(0);
             robot.rotateLeft.setPower(0);
-            telemetry.addData("Rotator State", "Off");
+            telemetry.addData("Rotator State", "Off"); // r u watching behind you
         }
+
+        telemetry.addLine();
+        telemetry.addData("Claw Rotator Position:", robot.rotateRight.getCurrentPosition());
+        telemetry.addData("Claw Rotator Position:", robot.rotateLeft.getCurrentPosition());
 
         //======================================
         //----------LIFT CONTROL----------------
         //======================================
 
         if (gamepad1.dpad_up){
-            robot.liftMotor.setPower(.2);
-            telemetry.addData("Lift State", "Goin' Up");
+            robot.liftMotor.setPower(.4);
+            telemetry.addData("Extender Star Symbol", "Stretchy Boi");
         }
         else if (gamepad1.dpad_down){
             robot.liftMotor.setPower(-.2);
-            telemetry.addData("Lift State", "Goin' Down");
+            telemetry.addData("Extender Star Symbol", "Shrinky Boi");
         }
         else {
             robot.liftMotor.setPower(0);
-            telemetry.addData("Lift State", "Procrastinating");//procrastinating = not doin' anythin
+            telemetry.addData("Extender Star Symbol", "Bench Warming");//Bench Warming = not doin' anythin
         }
 
         //======================================
@@ -188,10 +192,22 @@ public class rebornTeleOp extends OpMode {
             telemetry.addData("Claw State", "Squeeeze");//squeeze is close
         }
         else{
-            robot.clawServo.setPosition(.5);
+            robot.clawServo.setPosition(.15);
             telemetry.addData("Claw State", "Sigh");//sigh is release
+        }
+        // LIFT ACTIVATION
+        // up and down using left trigger for extension/lift
+        if (gamepad1.left_trigger>.1){
+            robot.dropServo.setPosition(0);
+            telemetry.addData("helo boogaloo", "byebye boogaloo");//bye bye boogalo is down
+        }
+        else{
+            robot.dropServo.setPosition(.5);
+            telemetry.addData("helo boogaloo", "hii boogaloo");//hii boogaloo is up
         }
 
         telemetry.update();
     }
 }
+
+

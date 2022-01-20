@@ -15,7 +15,7 @@ public class rebornHardware
     public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, liftMotor = null, duckSpinner = null;
     //public DcMotor  pulleyMotor0 = null, pulleyMotor1=null, carousel = null;
     //public CRServo extenderServo = null;
-    public Servo clawServo = null;
+    public Servo clawServo = null, dropServo= null;
 
 //    public static final double grabber_min = 0;
 //    public static final double grabber_max = 0.75;
@@ -40,6 +40,8 @@ public class rebornHardware
 
 
         clawServo = hwMap.get(Servo.class, "clawServo");
+        dropServo = hwMap.get(Servo.class, "dropServo");
+
 
 
         // Set Direction
@@ -58,7 +60,7 @@ public class rebornHardware
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
-        backRight.setPower(0);
+        backRight.setPower(0); // u know who wont be back tho? u.
 
         rotateLeft.setPower(0);
         rotateRight.setPower(0);
