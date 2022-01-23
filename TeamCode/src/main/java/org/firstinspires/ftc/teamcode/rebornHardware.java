@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 // Hardware class for the Greenhill 3 testbot
 // This hardware is for INFERNO REBORN, the robot we were working on as of January 8, 2022.
@@ -16,6 +17,8 @@ public class rebornHardware
     //public DcMotor  pulleyMotor0 = null, pulleyMotor1=null, carousel = null;
     //public CRServo extenderServo = null;
     public Servo clawServo = null, dropServo= null;
+
+    public TouchSensor clawStopTouch = null;
 
 //    public static final double grabber_min = 0;
 //    public static final double grabber_max = 0.75;
@@ -41,6 +44,8 @@ public class rebornHardware
 
         clawServo = hwMap.get(Servo.class, "clawServo");
         dropServo = hwMap.get(Servo.class, "dropServo");
+
+        clawStopTouch = hwMap.touchSensor.get("clawStopTouch");
 
 
 

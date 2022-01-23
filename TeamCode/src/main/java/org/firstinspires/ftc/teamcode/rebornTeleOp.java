@@ -81,6 +81,9 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
+        telemetry.addData("Touch Sensor Pressed", robot.clawStopTouch.getValue());//should indicate whether the touch sensor is pressed.
+
+
         //======================================
         //------------WHEEL CODE----------------
         //======================================
