@@ -27,9 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.LegacyCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -60,8 +60,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="red2", group="Pushbot")
-public class red2 extends LinearOpMode {
+@Disabled
+//@Autonomous(name="red1", group="Pushbot")
+public class red1 extends LinearOpMode {
 
     /* Declare OpMode members. */
     mecanumHardware robot = new mecanumHardware();   // Use a Pushbot's hardware
@@ -77,25 +78,35 @@ public class red2 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        ElapsedTime e = new ElapsedTime();
+
+        e.reset();
+        e.milliseconds();
+
+
         robot.init(hardwareMap);
         waitForStart();
 
         //vuforia stuff here
 
         //the below program assumes we start on blue team
-        //RED 2 TO THE WALL AND ASSUMES WE DONT HAVE TO GO AROUND OTHER ROBOT, CLAW IS FACING WALL
-        //move(0.5,'y',2000);
-        move(1, 'y' , 10000);
+        //drive horizontally towards wall, OR move forward to the wall
+        /*ASSUMES ROBOT IS RED NEXT TO THE CAROUSEL, ROBOT IS FACING THE WALL, SO CLAW AND WHEEL IS
+        NEXT TO THE WALL AND IT NEEDS TO GO LEFT TO CAROUSEL*/
+        //MOVES LEFT TO CAROUSEL
+        move(1, 'y' , 7500);
         //spin carousel for 8 seconds
-        robot.carousel.setPower(-0.8);
-        sleep(8000);
-        robot.carousel.setPower(0);
-        //drive TO THE SHIPPING HUB, WITH NO DISRUPTIONS FROM OTHER ROBOT
+        //e.reset();
+        //while(e.milliseconds() < 8000) {
+         //   robot.carousel.setPower(-0.8);
+        }
+        //robot.carousel.setPower(0);
+        //drives RIGHT TO WAREHOUSE
         //move(1, 'f',1500);
-        move(1, 'x', 10000);
+        //move(1, 'b', 4500);
         //stop (dropping cargo TBD)
-        motorStop();
-    }
+        //motorStop();
+
 
     public void motorStop() {
         robot.frontLeft.setPower(0);
@@ -106,22 +117,25 @@ public class red2 extends LinearOpMode {
     }
 
     public void move(double power, char direction, long SLEEP) {
+        ElapsedTime t = new ElapsedTime();
         switch(direction){
             case 'f':
                 //setting power of motors to go forward
-                robot.frontLeft.setPower(power);
-                robot.frontRight.setPower(power);
-                robot.backLeft.setPower(power);
-                robot.backRight.setPower(power);
-                sleep(SLEEP);
+                while(t.milliseconds() < SLEEP) {
+                    robot.frontLeft.setPower(power);
+                    robot.frontRight.setPower(power);
+                    robot.backLeft.setPower(power);
+                    robot.backRight.setPower(power);
+                }
                 break;
             case 'b':
                 //setting power of motors to go backward
-                robot.frontLeft.setPower(-power);
-                robot.frontRight.setPower(-power);
-                robot.backLeft.setPower(-power);
-                robot.backRight.setPower(-power);
-                sleep(SLEEP);
+                while(t.milliseconds() < SLEEP) {
+                    robot.frontLeft.setPower(-power);
+                    robot.frontRight.setPower(-power);
+                    robot.backLeft.setPower(-power);
+                    robot.backRight.setPower(-power);
+                }
                 break;
             case 'r':
                 //to go right
@@ -141,19 +155,21 @@ public class red2 extends LinearOpMode {
                 break;
             case 'x':
                 //to strafe right
-                robot.frontLeft.setPower(power);
-                robot.frontRight.setPower(-power);
-                robot.backLeft.setPower(-power);
-                robot.backRight.setPower(power);
-                sleep(SLEEP);
+                while(t.milliseconds() < SLEEP) {
+                    robot.frontLeft.setPower(power);
+                    robot.frontRight.setPower(-power);
+                    robot.backLeft.setPower(-power);
+                    robot.backRight.setPower(power);
+                }
                 break;
             case 'y' :
                 // to strafe left
-                robot.frontLeft.setPower(-power);
-                robot.frontRight.setPower(power);
-                robot.backLeft.setPower(power);
-                robot.backRight.setPower(-power);
-                sleep(SLEEP);
+                while(t.milliseconds() < SLEEP) {
+                    robot.frontLeft.setPower(-power);
+                    robot.frontRight.setPower(power);
+                    robot.backLeft.setPower(power);
+                    robot.backRight.setPower(-power);
+                }
                 break;
             default:
                 motorStop();

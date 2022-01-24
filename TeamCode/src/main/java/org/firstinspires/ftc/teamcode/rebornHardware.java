@@ -45,7 +45,8 @@ public class rebornHardware
         clawServo = hwMap.get(Servo.class, "clawServo");
         dropServo = hwMap.get(Servo.class, "dropServo");
 
-        clawStopTouch = hwMap.touchSensor.get("clawStopTouch");
+        clawStopTouch = hwMap.touchSensor.get("clawStopMag");
+
 
 
 

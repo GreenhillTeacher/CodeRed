@@ -151,43 +151,27 @@ public class rebornTeleOp extends OpMode {
         //----------CLAW ROTATOR----------------
         //======================================
 
-        if (gamepad1.dpad_left){
-            robot.rotateRight.setPower(-.2*precisionActive);
-            robot.rotateLeft.setPower(-.2*precisionActive);
+
+        if (gamepad1.dpad_up) {
+            robot.rotateRight.setPower(-.2 * precisionActive);
+            robot.rotateLeft.setPower(-.2 * precisionActive);
             telemetry.addData("Rotator State", "Down"); //be careful wherever you go.
-        }
-        else if (gamepad1.dpad_right){
-            robot.rotateRight.setPower(.15*precisionActive);
-            robot.rotateLeft.setPower(.15*precisionActive);
+        } else if (gamepad1.dpad_down && (robot.clawStopTouch.getValue() == 0.0 || gamepad1.left_bumper)) {
+            robot.rotateRight.setPower(.05 * precisionActive);
+            robot.rotateLeft.setPower(.05 * precisionActive);
             telemetry.addData("Rotator State", "Up");
 
-        }
-        else {
+        } else {
             robot.rotateRight.setPower(0);
             robot.rotateLeft.setPower(0);
             telemetry.addData("Rotator State", "Off"); // r u watching behind you
         }
 
         telemetry.addLine();
+        telemetry.addData("In the DANGER ZONE", robot.clawStopTouch.getValue());
         telemetry.addData("Claw Rotator Position:", robot.rotateRight.getCurrentPosition());
         telemetry.addData("Claw Rotator Position:", robot.rotateLeft.getCurrentPosition());
 
-        //======================================
-        //----------LIFT CONTROL----------------
-        //======================================
-
-        if (gamepad1.dpad_up){
-            robot.liftMotor.setPower(.4);
-            telemetry.addData("Extender Star Symbol", "Stretchy Boi");
-        }
-        else if (gamepad1.dpad_down){
-            robot.liftMotor.setPower(-.2);
-            telemetry.addData("Extender Star Symbol", "Shrinky Boi");
-        }
-        else {
-            robot.liftMotor.setPower(0);
-            telemetry.addData("Extender Star Symbol", "Bench Warming");//Bench Warming = not doin' anythin
-        }
 
         //======================================
         //----------CLAW ACTIVATION-------------
@@ -197,19 +181,9 @@ public class rebornTeleOp extends OpMode {
             robot.clawServo.setPosition(0);
             telemetry.addData("Claw State", "Squeeeze");//squeeze is close
         }
-        else{
+        else {
             robot.clawServo.setPosition(.15);
             telemetry.addData("Claw State", "Sigh");//sigh is release
-        }
-        // LIFT ACTIVATION
-        // up and down using left trigger for extension/lift
-        if (gamepad1.left_trigger>.1){
-            robot.dropServo.setPosition(0);
-            telemetry.addData("helo boogaloo", "byebye boogaloo");//bye bye boogalo is down
-        }
-        else{
-            robot.dropServo.setPosition(.5);
-            telemetry.addData("helo boogaloo", "hii boogaloo");//hii boogaloo is up
         }
 
         telemetry.update();

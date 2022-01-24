@@ -27,9 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.LegacyCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -59,10 +59,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-
-@Autonomous(name="red2disruption", group="Pushbot")
-public class red2disruption extends LinearOpMode {
-
+@Disabled
+//@Autonomous(name="blue2", group="Pushbot")
+public class blue2 extends LinearOpMode {
+//kjkjhkjh
     /* Declare OpMode members. */
     mecanumHardware robot = new mecanumHardware();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
@@ -83,29 +83,16 @@ public class red2disruption extends LinearOpMode {
         //vuforia stuff here
 
         //the below program assumes we start on blue team
-        //drive horizontally towards wall, OR move forward to the wall
-        /*ASSUMES OTHER ROBOT IS NOT DOING ANYTHING, SO YOU HAVE TO GO AROUND IT,
-        ROBOT IS FACING THE WALL, CLAW/WHEEL TO THE WALL
-        */
-
-        //go backwards to start going around
-        move(1, 'b',100);
-        //go to the left to the other edge of robot
-        move (1, 'y',250);
-        //drive forward a bit to go to carousel
-        move(1, 'f', 100);
-        //spin carousel
+        //BLUE 2 TO THE WALL AND ASSUMES WE DONT HAVE TO GO AROUND OTHER ROBOT,ROBOT FACING CAROUSEL
+        //GO FORWARDS TO CAROUSEL
+        move(1, 'f' , 750);
+        //spin carousel for 8 seconds
         robot.carousel.setPower(-0.8);
         sleep(8000);
         robot.carousel.setPower(0);
-        //go backwards a bit
-        move(1, 'b',100);
-        //go to the right to other edge of robot
-        move (1, 'x',250);
-        //go forward to the wall
-        move(1, 'f',100);
-        //go to the right to the warehouse
-        move(1, 'x',550);
+        //drive BACKWARDS TO THE SHIPPING HUB, WITH NO DISRUPTIONS FROM OTHER ROBOT
+        //move(1, 'f',1500);
+        move(1, 'b', 1000);
         //stop (dropping cargo TBD)
         motorStop();
     }

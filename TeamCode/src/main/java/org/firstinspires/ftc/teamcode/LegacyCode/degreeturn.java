@@ -27,12 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.LegacyCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -60,9 +63,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-
-@Autonomous(name="Red - Far Duck Retrieval", group="Red Auton")
-public class redfar extends LinearOpMode {
+@Disabled
+//@Autonomous(name="degree testing duckie", group="Blue Auton")
+public class degreeturn extends LinearOpMode {
     public int x;
     public int y;
 
@@ -74,35 +77,54 @@ public class redfar extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 2 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 3.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+
+    final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
+    //  The GAIN constants set the relationship between the measured position error,
+    //  and how much power is applied to the drive motors.  Drive = Error * Gain
+    //  Make these values smaller for smoother control.
+    final double SPEED_GAIN =   0.02 ;   //  Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double TURN_GAIN  =   0.01 ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MM_PER_INCH = 25.40 ;   //  Metric conversion
+    private static final String VUFORIA_KEY = "AU2ZVVD/////AAABmWSnWzlvdECDh0CawWRMh50kTOol0b5i6u8TJ9mYkhAojzXIoOAOVA7kFQAmVX8CWYdcpRjhQUnpcWViN2ckinEOTF1xTzWbTv6pqSuYaUgSwNKQUy1nipKxdEpTCv6BW+17wHICNqIJVCblf5CCvgg79QnDk1G503iGNlmz8a9wRZIYadFQzWBK7Ps/sWMliCnRgUe5KAVfWAs/K+0DzveH/Gq82hE9E1GIXusodMsZJzGlmQKEWcIgfzuWYzzlYdJpw6eNPSVIK5lisdkBfkzJbsWSIsOuKJOzJMwB894qq7OB/nMJCaWT3qseZamRZKm0wpgVng4x0gW/ZccKzl/4jDDeuJOa2K4MSfCDTPn+";
+    VuforiaLocalizer vuforia    = null;
+    OpenGLMatrix targetPose     = null;
+    String targetName           = "";
 
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        //vuforia
+
+
+
         waitForStart();
 
-        //vuforia stuff here
-
-        //the below program assumes we start on blue team
-        //drive horizontally towards wall, OR move forward to the wall
-        //distance is how many inches you wanna go
-        //ASSUMES BLUE TEAM CLOSE TO CAROUSEL, ITS FACING FORWARD TO CAROUSEL
-        //strafe left a bit
 
 
-        //move(1,'y',11);
+
+        turning(1,'c',360);
+        sleep(50);
+        turning(1, 'v', 180);
+        sleep(50);
+        turning(1, 'c', 45);
+        sleep(50);
+        turning(1,'v',90);
+        sleep(50);
+        turning(1,'c',45);
+        sleep(50);
+        turning(1,'v',180);
+        sleep(50);
+
+
+
         reset();
 
-        //GO BACKWARDS TO WAREHOUSE. FACING TEAM CAROUSEL
-        move(1,'b',36);
-        reset();
-
-        reset();
 
 
-        motorStop();
     }
 
     public void motorStop() {
@@ -117,7 +139,7 @@ public class redfar extends LinearOpMode {
         robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
@@ -180,6 +202,12 @@ public class redfar extends LinearOpMode {
 
                 while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
                 {
+                    telemetry.clear();
+                    telemetry.addData("Front Left Pos", robot.frontLeft.getCurrentPosition());
+                    telemetry.addData("Front Right Pos", robot.frontRight.getCurrentPosition());
+                    telemetry.addData("Back Left Pos", robot.backLeft.getCurrentPosition());
+                    telemetry.addData("Back Right (Mephistopheles) Pos", robot.backRight.getCurrentPosition());
+                    telemetry.update();
 
                 }
                 motorStop();
@@ -191,128 +219,133 @@ public class redfar extends LinearOpMode {
                 break;
 
             case 'r':
-                //to go right
+                //to turn clockwise
 
-            robot.frontLeft.setTargetPosition((int)ticks);
-            robot.backLeft.setTargetPosition((int)ticks);
-            robot.frontRight.setTargetPosition((int)-ticks);
-            robot.backRight.setTargetPosition((int)-ticks);
-            //set run to position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontLeft.setTargetPosition((int)ticks);
+                robot.backLeft.setTargetPosition((int)ticks);
+                robot.frontRight.setTargetPosition((int)-ticks);
+                robot.backRight.setTargetPosition((int)-ticks);
+                //set run to position
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            //set drive power for forward
-            robot.frontLeft.setPower(power);
-            robot.frontRight.setPower(power);
-            robot.backLeft.setPower(-power);
-            robot.backRight.setPower(-power);
+                //set drive power for forward
+                robot.frontLeft.setPower(power);
+                robot.frontRight.setPower(power);
+                robot.backLeft.setPower(-power);
+                robot.backRight.setPower(-power);
 
-            while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
-            {
+                while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
+                {
 
-            }
-            motorStop();
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+                motorStop();
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            break;
+                break;
             case 'l':
-                // to go left
+                // to turn counter clockwise
 
-            robot.frontLeft.setTargetPosition((int)ticks);
-            robot.backLeft.setTargetPosition((int) -ticks);
-            robot.frontRight.setTargetPosition((int)-ticks);
-            robot.backRight.setTargetPosition((int) ticks);
-            //set run to position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontLeft.setTargetPosition((int)-ticks);
+                robot.backLeft.setTargetPosition((int) -ticks);
+                robot.frontRight.setTargetPosition((int)ticks);
+                robot.backRight.setTargetPosition((int) ticks);
+                //set run to position
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            //set drive power for forward
-            robot.frontLeft.setPower(-power);
-            robot.frontRight.setPower(power);
-            robot.backLeft.setPower(-power);
-            robot.backRight.setPower(power);
+                //set drive power for forward
+                robot.frontLeft.setPower(-power);
+                robot.frontRight.setPower(power);
+                robot.backLeft.setPower(-power);
+                robot.backRight.setPower(power);
 
-            while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
-            {
+                while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
+                {
+                    telemetry.clear();
+                    telemetry.addData("Front Left Pos", robot.frontLeft.getCurrentPosition());
+                    telemetry.addData("Front Right Pos", robot.frontRight.getCurrentPosition());
+                    telemetry.addData("Back Left Pos", robot.backLeft.getCurrentPosition());
+                    telemetry.addData("Back Right (Mephistopheles) Pos", robot.backRight.getCurrentPosition());
+                    telemetry.update();
+                }
+                motorStop();
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            }
-            motorStop();
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            break;
+                break;
             case 'x':
                 //to strafe right
 
 
-            //set target position
-            robot.frontLeft.setTargetPosition((int) ticks);
-            robot.backLeft.setTargetPosition((int)-ticks);
-            robot.frontRight.setTargetPosition((int)-ticks);
-            robot.backRight.setTargetPosition((int) ticks);
-            //set run to position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                //set target position
+                robot.frontLeft.setTargetPosition((int) ticks);
+                robot.backLeft.setTargetPosition((int)-ticks);
+                robot.frontRight.setTargetPosition((int)-ticks);
+                robot.backRight.setTargetPosition((int) ticks);
+                //set run to position
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            //set drive power for forward
-            robot.frontLeft.setPower(power);
-            robot.frontRight.setPower(-power);
-            robot.backLeft.setPower(-power);
-            robot.backRight.setPower(power);
+                //set drive power for forward
+                robot.frontLeft.setPower(power);
+                robot.frontRight.setPower(-power);
+                robot.backLeft.setPower(-power);
+                robot.backRight.setPower(power);
 
-            while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
-            {
+                while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
+                {
 
-            }
-            motorStop();
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+                motorStop();
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            break;
+                break;
             case 'y' :
                 // to strafe left
 
-            //set target position
-            robot.frontLeft.setTargetPosition((int)-ticks);
-            robot.backLeft.setTargetPosition((int)ticks);
-            robot.frontRight.setTargetPosition((int)ticks);
-            robot.backRight.setTargetPosition((int)-ticks);
-            //set run to position
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                //set target position
+                robot.frontLeft.setTargetPosition((int)-ticks);
+                robot.backLeft.setTargetPosition((int)ticks);
+                robot.frontRight.setTargetPosition((int)ticks);
+                robot.backRight.setTargetPosition((int)-ticks);
+                //set run to position
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            //set drive power for forward
-            robot.frontLeft.setPower(-power);
-            robot.frontRight.setPower(power);
-            robot.backLeft.setPower(power);
-            robot.backRight.setPower(-power);
+                //set drive power for forward
+                robot.frontLeft.setPower(-power);
+                robot.frontRight.setPower(power);
+                robot.backLeft.setPower(power);
+                robot.backRight.setPower(-power);
 
-            while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
-            {
+                while (robot.frontLeft.isBusy() && robot.backLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy())
+                {
 
-            }
-            motorStop();
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+                motorStop();
+                robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            break;
+                break;
             default:
                 motorStop();
         }
@@ -384,7 +417,7 @@ public class redfar extends LinearOpMode {
 
                 break;
             case '3':
-                // go back to the right
+                // go back right
 
                 robot.frontLeft.setTargetPosition(0);
                 robot.backLeft.setTargetPosition((int) -ticks);
@@ -415,7 +448,7 @@ public class redfar extends LinearOpMode {
                 break;
 
             case '4':
-
+//back left
                 robot.frontLeft.setTargetPosition((int) -ticks);
                 robot.backLeft.setTargetPosition(0);
                 robot.frontRight.setTargetPosition(0);
@@ -446,7 +479,22 @@ public class redfar extends LinearOpMode {
             default:
                 motorStop();
 
-            }
-            }
         }
+
+    }
+    public void turning(double power, char direction, double degree){
+        double dToIn = degree * (14.5/90);
+        switch (direction){
+            //turning clockwise in degrees
+            case 'c':
+                move(power,'r', dToIn);
+                break;
+            case 'v':
+                move(power,'r',-dToIn);
+                break;
+        }
+
+
+    }
+}
 

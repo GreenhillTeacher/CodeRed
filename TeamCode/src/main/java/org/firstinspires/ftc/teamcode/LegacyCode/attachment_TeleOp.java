@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.LegacyCode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="attachment_TeleOp")
+@Disabled
+//@TeleOp(name="attachment_TeleOp")
 public class attachment_TeleOp extends OpMode {
     mecanumHardware robot = new mecanumHardware();
     @Override

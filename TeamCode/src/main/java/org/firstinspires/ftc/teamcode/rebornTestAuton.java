@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="Reborn Test", group="reborn")
 
-//THIS DOESNT WORK RIGHT NOW
-//AFTER START< IT GOES FORWARD INDEFINITELY. PROBABLY BECAUSE WE DONT HAVE ENCODERS
-
 public class rebornTestAuton extends rebornDriving{
     @Override
     public void runOpMode (){
@@ -14,9 +11,14 @@ public class rebornTestAuton extends rebornDriving{
 
         waitForStart();
 
-        move(1, 'f', 5);
+        int testDist = 90;
+
+        motorStop();
+
+        rotate(.6, 'l', testDist);
+        sleep (1000);
+        rotate(.6, 'r', testDist);
         sleep(1000);
-        move(1, 'b', 5);
-        sleep(1000);
+        rotate(.6, 'l', testDist);
     }
 }

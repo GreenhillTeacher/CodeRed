@@ -27,9 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.LegacyCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -60,9 +60,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-
-@Autonomous(name="Red - Direct Duck Retrieval", group="Red Auton")
-public class redclose extends LinearOpMode {
+@Disabled
+//@Autonomous(name="Blue - Far Duck Retrieval", group="Blue Auton")
+public class bluefar extends LinearOpMode {
     public int x;
     public int y;
 
@@ -96,22 +96,14 @@ public class redclose extends LinearOpMode {
         reset();
         //move(1,'f',10);
         //turn left
-        //move(1,'l',2);\
-        //strafe left, FACING OPPOSITE OF TEAM WALL, TO THE OTHER TEAM
-        move(1,'y',25.5);
+        //GO BACKWARDS TO WAREHOUSE, FACING TEAM CAROUSEL
+        move(1,'b',36);
         reset();
-        //carousel
-        robot.carousel.setPower(0.8);
-        sleep(2500);
-        robot.carousel.setPower(0);
 
         reset();
-        //forwards to team shipping place
-        move(1,'f',50);
-        reset();
-        //move(1,'y',15);
-        reset();
-//
+        //move(1, 'f',1500);
+        //move(1,'b',50);
+
         motorStop();
     }
 
