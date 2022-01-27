@@ -405,26 +405,64 @@ public class rebornDriving extends LinearOpMode {
         }
     }
 
-    public void lift (double power, long moveTime){
+    public void lift (double power, int level, long moveTime){
         robot.rotateLeft.setPower(.05*power);
         robot.rotateRight.setPower(.05*power);
 
         long currentTime = System.currentTimeMillis();
-        while (currentTime + moveTime > System.currentTimeMillis()){
+        boolean atPosition = false;
+        while (currentTime + moveTime > System.currentTimeMillis() && !atPosition){
             telemetry.addData("Target Time", currentTime+moveTime);
             telemetry.addData("Current time", System.currentTimeMillis());
             telemetry.update();
-            if (robot.clawStopTouch.getValue()==1.0){
-
+            if (robot.magStopBottom.getValue()==1.0 && level !=1){
                 robot.rotateRight.setPower(-.1);
                 robot.rotateLeft.setPower(-.1);
-                sleep(1000);
                 break;
+            }
+            switch (level){
+                case 1:
+                    if (robot.magStopBottom.getValue()==1.0){
+                        robot.rotateRight.setPower(-.1);
+                        robot.rotateLeft.setPower(-.1);
+                        telemetry.addData("Stopped", 1);
+                        telemetry.update();
+                        sleep(400);
+                        motorStop();
+                        robot.rotateRight.setPower(-.05);
+                        robot.rotateRight.setPower(-.05);
+                        sleep(300);
+                        motorStop();
+                        break;
+                    }
+                    break;
+                case 2:
+                    if (robot.magStopMid.getValue()==1.0){
+                        robot.rotateRight.setPower(-.37);
+                        robot.rotateLeft.setPower(-.37);
+                        telemetry.addData("Stopped", 2);
+                        telemetry.update();
+                        sleep(200);
+                        atPosition = true;
+                        break;
+                    }
+                    break;
+                case 3:
+                    if (robot.magStopTop.getValue()==1.0){
+                        sleep(150);
+                        robot.rotateRight.setPower(-.1);
+                        robot.rotateLeft.setPower(-.1);
+                        sleep(50);
+                        atPosition = true;
+                        break;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
-        robot.rotateRight.setPower(0);
-        robot.rotateLeft.setPower(0);
+        motorStop();
 
 
         //Theoretical way to get it to run on encoders. doesn't work for now.

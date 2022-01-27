@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,7 +17,7 @@ public class rebornHardware
     //public CRServo extenderServo = null;
     public Servo clawServo = null, dropServo= null;
 
-    public TouchSensor clawStopTouch = null;
+    public TouchSensor magStopBottom = null, magStopMid = null, magStopTop = null;
 
 //    public static final double grabber_min = 0;
 //    public static final double grabber_max = 0.75;
@@ -45,7 +44,10 @@ public class rebornHardware
         clawServo = hwMap.get(Servo.class, "clawServo");
         dropServo = hwMap.get(Servo.class, "dropServo");
 
-        clawStopTouch = hwMap.touchSensor.get("clawStopMag");
+        magStopBottom = hwMap.touchSensor.get("magStopBottom");
+        magStopMid = hwMap.touchSensor.get("magStopMid");
+        magStopTop = hwMap.touchSensor.get("magStopTop");
+
 
 
 

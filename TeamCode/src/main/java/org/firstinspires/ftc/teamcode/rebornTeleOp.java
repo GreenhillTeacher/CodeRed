@@ -84,7 +84,7 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
-        telemetry.addData("Touch Sensor Pressed", robot.clawStopTouch.getValue());//should indicate whether the touch sensor is pressed.
+        telemetry.addData("Touch Sensor Pressed", robot.magStopBottom.getValue());//should indicate whether the touch sensor is pressed.
 
 
         //======================================
@@ -156,7 +156,7 @@ public class rebornTeleOp extends OpMode {
             robot.rotateRight.setPower(-.2 * precisionActive);
             robot.rotateLeft.setPower(-.2 * precisionActive);
             telemetry.addData("Rotator State", "Up"); //be careful wherever you go.
-        } else if (gamepad1.dpad_down && (robot.clawStopTouch.getValue() == 0.0 || gamepad1.left_bumper)) {
+        } else if (gamepad1.dpad_down && (robot.magStopBottom.getValue() == 0.0 || gamepad1.left_bumper)) {
             robot.rotateRight.setPower(.05 * precisionActive);
             robot.rotateLeft.setPower(.05 * precisionActive);
             telemetry.addData("Rotator State", "Down");
@@ -168,7 +168,7 @@ public class rebornTeleOp extends OpMode {
         }
 
         telemetry.addLine();
-        telemetry.addData("In the DANGER ZONE", robot.clawStopTouch.getValue());
+        telemetry.addData("In the DANGER ZONE", robot.magStopBottom.getValue());
         telemetry.addData("Claw Rotator Position:", robot.rotateRight.getCurrentPosition());
         telemetry.addData("Claw Rotator Position:", robot.frontLeft.getCurrentPosition());
 
