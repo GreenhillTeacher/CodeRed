@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.provider.Settings;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,6 +41,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import java.time.Clock;
 
 /**
  * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -49,9 +53,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Duck Detect Test", group = "Concept")
+@Autonomous(name = "Camera Detection Test", group = "Concept")
 //@Disabled
-public class duckDetectTest extends LinearOpMode {
+public class duckDetectTest extends rebornDriving {
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
      * the following 4 detectable objects
      *  0: Ball,
@@ -100,6 +104,7 @@ public class duckDetectTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        robot.init(hardwareMap);
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
@@ -126,38 +131,26 @@ public class duckDetectTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        int duckLevel = -1;
+
+
+
         if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Duck Detected", updatedRecognitions.size());
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                            if (recognition.getLabel().equalsIgnoreCase("Duck")) {
-                                if (recognition.getLeft() >300.0) {
-                                    telemetry.addData("Duck Location", "Warehouse Far");
-                                } else if (recognition.getLeft() < 150.0) {
-                                    telemetry.addData("Duck Location", "Middle");
-                                } else {
-                                    telemetry.addData("Duck Location", "Warehouse Close");
-                                }
-                            }
-                            i++;
+            //==============================
+            //-----DOPE VUFORIA STUFF-------
+            //==============================
 
+            duckLevel = duckDetection();
 
-                        }
-                        telemetry.update();
-                    }
-                }
+            switch(duckLevel){
+                case (1):
+                    move(.6, 'f', 7);
+                case (2):
+                    move(.6, 'r', 7);
+                case (3):
+                    move (.6, 'b', 4);
+                default:
+                    break;
             }
         }
     }
@@ -192,5 +185,54 @@ public class duckDetectTest extends LinearOpMode {
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+
+    private int duckDetection (){
+        long programTime = System.currentTimeMillis();
+        long waitTime = 5000L;
+
+        while (opModeIsActive()) {
+
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Duck Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
+                        if (recognition.getLabel().equalsIgnoreCase("Duck")) {
+                            if (recognition.getLeft() >300.0) {
+                                telemetry.addData("Duck Location", "Warehouse Far");
+                                return 3;
+                            } else if (recognition.getLeft() < 150.0) {
+                                telemetry.addData("Duck Location", "Middle");
+                                return 2;
+                            }
+                        }
+                        i++;
+
+
+                    }
+                    telemetry.update();
+                }
+                else {
+                    telemetry.addData("Duck Location", "Warehouse Close");
+                    telemetry.addData("Target Time", programTime + waitTime);
+                    telemetry.addData("Current Time", System.currentTimeMillis());
+                    telemetry.update();
+                    if (programTime + waitTime < System.currentTimeMillis()){
+                        return 1;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 }

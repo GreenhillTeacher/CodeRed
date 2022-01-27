@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name="Reborn Test", group="reborn")
-
+@Autonomous(name="Single Operation", group="reborn")
+//@Disabled
 public class rebornTestAuton extends rebornDriving{
     @Override
     public void runOpMode (){
@@ -11,14 +12,12 @@ public class rebornTestAuton extends rebornDriving{
 
         waitForStart();
 
-        int testDist = 90;
+        int testDist = 2;
 
         motorStop();
 
-        rotate(.6, 'l', testDist);
-        sleep (1000);
-        rotate(.6, 'r', testDist);
-        sleep(1000);
-        rotate(.6, 'l', testDist);
+        lift(2, 1000);
+        robot.clawServo.setPosition(.15);
+
     }
 }

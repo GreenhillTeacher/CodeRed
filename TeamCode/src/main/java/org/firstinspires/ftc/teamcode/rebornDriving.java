@@ -20,6 +20,8 @@ public class rebornDriving extends LinearOpMode {
     static final double     TURN_SPEED              = 0.5;
     static final double     INCHES_FOR_RIGHT_ANGLE  = 4;
 
+    static final double     LIFT_COUNTS_FULL_REVOLVE= 1440 /4;
+
     final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
     //  The GAIN constants set the relationship between the measured position error,
     //  and how much power is applied to the drive motors.  Drive = Error * Gain
@@ -39,6 +41,8 @@ public class rebornDriving extends LinearOpMode {
         robot.frontRight.setPower(0);
         robot.backLeft.setPower(0);
         robot.backRight.setPower(0);
+        robot.rotateLeft.setPower(0);
+        robot.rotateRight.setPower(0);
 //        robot.carousel.setPower(0);
         reset();
     }
@@ -47,6 +51,8 @@ public class rebornDriving extends LinearOpMode {
         robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rotateRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rotateRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
@@ -397,5 +403,51 @@ public class rebornDriving extends LinearOpMode {
                 motorStop();
 
         }
+    }
+
+    public void lift (double power, long moveTime){
+        robot.rotateLeft.setPower(.05*power);
+        robot.rotateRight.setPower(.05*power);
+
+        long currentTime = System.currentTimeMillis();
+        while (currentTime + moveTime > System.currentTimeMillis()){
+            telemetry.addData("Target Time", currentTime+moveTime);
+            telemetry.addData("Current time", System.currentTimeMillis());
+            telemetry.update();
+            if (robot.clawStopTouch.getValue()==1.0){
+
+                robot.rotateRight.setPower(-.1);
+                robot.rotateLeft.setPower(-.1);
+                sleep(1000);
+                break;
+            }
+        }
+
+        robot.rotateRight.setPower(0);
+        robot.rotateLeft.setPower(0);
+
+
+        //Theoretical way to get it to run on encoders. doesn't work for now.
+//        double ticks = LIFT_COUNTS_FULL_REVOLVE * anglePercent /20;
+//
+//        robot.rotateLeft.setTargetPosition((int)ticks);
+//        robot.rotateRight.setTargetPosition((int)ticks);
+//
+//        robot.rotateLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        robot.rotateRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        robot.rotateLeft.setPower(.02);
+//        robot.rotateRight.setPower(.02);
+//
+//
+//        while (robot.rotateLeft.isBusy()){
+//            telemetry.addData("Target:", (int)ticks);
+//            telemetry.addData("Current", robot.rotateLeft.getCurrentPosition());
+//            telemetry.update();
+//
+//        }
+//        telemetry.addData("OUT", "YUP");
+//        telemetry.update();
+//        motorStop();
     }
 }

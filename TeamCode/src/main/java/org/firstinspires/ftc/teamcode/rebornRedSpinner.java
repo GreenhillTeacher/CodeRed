@@ -143,18 +143,26 @@ public class rebornRedSpinner extends rebornDriving {
 
 
         motorStop();
+
+        move(.6, 'l', 3);
         //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
-        move(0.8, 'f', 20);
+        move(0.3, 'f', 17);
         sleep(150);
+        move(.05, 'f', 1);
 
         //spin the duck
-        robot.duckSpinner.setPower(-0.5);
-        sleep(2500);
+        robot.duckSpinner.setPower(0.5);
+        sleep(500);
+        move(.1, 'f', 2);
+        sleep(500);
         robot.duckSpinner.setPower(0);
         motorStop();
 
+        move(.6, 'b', 10);
+        move(.6, 'l', 10);
+
         //move right
-        rotate(1, 'r', 90);
+        rotate(1, 'l', 100);
 
         //continue until the image is seen
         targetFound = false;
@@ -200,21 +208,10 @@ public class rebornRedSpinner extends rebornDriving {
         }
         telemetry.update();
         //move(1,'b',2);
-        move(1, 'f', 7);
+//        move(1, 'r', 7);
         reset();
-        move(1, 'r', targetRange);
+        move(1, 'r', targetRange-.5);
 
-        //move(1,'y',11);
-
-        //move(1,
-        // \'f',1500);
-
-        //move(1,'3',targetRange);
-
-//        reset();
-//        //move(1,'y',15);
-//        reset();
-        //y = strafef eleft
 
     }
 }

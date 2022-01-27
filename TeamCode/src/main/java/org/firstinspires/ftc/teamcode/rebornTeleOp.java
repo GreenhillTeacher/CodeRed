@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  *
  */
 
-@TeleOp(name="teleOpTest-Mechanum", group="reborn") // i will come soon. when the 3d print is done, make sure u watch ur back
+@TeleOp(name="Reborn Teleop", group="reborn") // i will come soon. when the 3d print is done, make sure u watch ur back
 //@Disabled
 public class rebornTeleOp extends OpMode {
 
@@ -155,11 +155,11 @@ public class rebornTeleOp extends OpMode {
         if (gamepad1.dpad_up) {
             robot.rotateRight.setPower(-.2 * precisionActive);
             robot.rotateLeft.setPower(-.2 * precisionActive);
-            telemetry.addData("Rotator State", "Down"); //be careful wherever you go.
+            telemetry.addData("Rotator State", "Up"); //be careful wherever you go.
         } else if (gamepad1.dpad_down && (robot.clawStopTouch.getValue() == 0.0 || gamepad1.left_bumper)) {
             robot.rotateRight.setPower(.05 * precisionActive);
             robot.rotateLeft.setPower(.05 * precisionActive);
-            telemetry.addData("Rotator State", "Up");
+            telemetry.addData("Rotator State", "Down");
 
         } else {
             robot.rotateRight.setPower(0);
@@ -170,7 +170,7 @@ public class rebornTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("In the DANGER ZONE", robot.clawStopTouch.getValue());
         telemetry.addData("Claw Rotator Position:", robot.rotateRight.getCurrentPosition());
-        telemetry.addData("Claw Rotator Position:", robot.rotateLeft.getCurrentPosition());
+        telemetry.addData("Claw Rotator Position:", robot.frontLeft.getCurrentPosition());
 
 
         //======================================
