@@ -30,6 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -40,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.LegacyCode.mecanumHardware;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -69,10 +72,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 //@Disabled
-@Autonomous(name="Red - Duck Spinner", group="Reborn Red")
+@Autonomous(name="Blue - Duck Spinner", group="Reborn Blue")
 
 //NEED TO CORRECT THE MOVEMENT AND ORIENTATION BEFORE RUNNING. IT YEETS ITSELF FORWARD WHEN RUN
-public class rebornRedSpinner extends rebornDriving {
+public class rebornBlueSpinner extends rebornDriving {
     public int x;
     public int y;
 
@@ -96,7 +99,7 @@ public class rebornRedSpinner extends rebornDriving {
     public void runOpMode() {
         robot.init(hardwareMap);
 
-        telemetry.addData("orientation","Camera toward carosel. Second tile");
+        telemetry.addData("orientation", "Front toward caroselrebornBlueSpinner. Second tile");
         telemetry.update();
         //====================================
         //-----------VUFORIA INIT-------------
@@ -144,29 +147,31 @@ public class rebornRedSpinner extends rebornDriving {
 
         motorStop();
 
-        move(.6, 'b', 3);
-        move(0.3, 'r', 16);
+        move(.6, 'l', 3);
+        //STRAFE LEFT TO CAROUSEL, FACING TEAM WALL.
+        move(0.3, 'f', 17);
         sleep(150);
-        move(.05, 'r', 1);
+        move(.05, 'f', 1);
 
         //spin the duck
-        robot.duckSpinner.setPower(-0.1);
+        robot.duckSpinner.setPower(.2);
         sleep(500);
-        move(.1, 'r', 2);
+        move(.1, 'f', 2);
         sleep(500);
         robot.duckSpinner.setPower(0);
         motorStop();
 
+        move(.6, 'b', 10);
         move(.6, 'l', 10);
-        move(.6, 'b', 16);
 
         //move right
+        rotate(1, 'l', 100);
 
         //continue until the image is seen
         targetFound = false;
         while (!targetFound) {
             //move a little each time the image is not seen
-            move(.6, 'b', 2);
+            move(.6, 'f', 2);
 
             //looks for the image
             for (VuforiaTrackable trackable : targetsFreightFrenzy) {

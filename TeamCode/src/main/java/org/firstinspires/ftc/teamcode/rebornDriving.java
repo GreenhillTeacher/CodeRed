@@ -423,11 +423,11 @@ public class rebornDriving extends LinearOpMode {
             switch (level){
                 case 1:
                     if (robot.magStopBottom.getValue()==1.0){
-                        robot.rotateRight.setPower(-.1);
-                        robot.rotateLeft.setPower(-.1);
+                        robot.rotateRight.setPower(-.37);
+                        robot.rotateLeft.setPower(-.37);
                         telemetry.addData("Stopped", 1);
                         telemetry.update();
-                        sleep(400);
+                        sleep(200);
                         motorStop();
                         robot.rotateRight.setPower(-.05);
                         robot.rotateRight.setPower(-.05);
