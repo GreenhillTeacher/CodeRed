@@ -117,6 +117,12 @@ public class rebornBlueDuck extends rebornDriving {
         move(.3, 'f', 15);
         robot.clawServo.setPosition(.15);
 
+//        move(0.3,'b',15);
+//        move(.3,'r',20);
+//        rotate(.3,'l',100);
+//
+//        move(0.5,'f',20);
+
 
 
 
