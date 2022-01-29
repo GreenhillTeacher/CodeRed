@@ -87,7 +87,7 @@ public class rebornBlueDuck extends rebornDriving {
 
         //=======================
         //--actual code----------
-        //=======================
+        //=======================--------------------------------------------------------
         int duckPos = duckDetection();
         telemetry.addData("Duck Pos", duckPos);
         telemetry.update();
@@ -112,9 +112,9 @@ public class rebornBlueDuck extends rebornDriving {
         }
         sleep(200);
         rotate(.3, 'r', 100);
-        move(.3, 'l', 15);
+        move(.3, 'l', 20);
         sleep(200);
-        move(.3, 'f', 11);
+        move(.3, 'f', 15);
         robot.clawServo.setPosition(.15);
 
 
