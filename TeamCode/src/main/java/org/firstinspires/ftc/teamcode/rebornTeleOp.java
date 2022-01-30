@@ -134,11 +134,11 @@ public class rebornTeleOp extends OpMode {
         //======================================
 
         if (gamepad1.y){
-            robot.duckSpinner.setPower(1);
+            robot.duckSpinner.setPower(.1*precisionActive);
             telemetry.addData("Duck Spinner", "Wheeeee");
         }
         else if (gamepad1.x){
-            robot.duckSpinner.setPower(-1);
+            robot.duckSpinner.setPower(-.1*precisionActive);
             telemetry.addData("Duck Spinner", "Down"); //hello. i am watching.
 
         }
