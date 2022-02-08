@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -12,12 +14,14 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class rebornHardware
 {
     /* Public OpMode members. */
-    public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, liftMotor = null, duckSpinner = null;
+    public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, duckSpinner = null;
     //public DcMotor  pulleyMotor0 = null, pulleyMotor1=null, carousel = null;
     //public CRServo extenderServo = null;
-    public Servo clawServo = null, dropServo= null;
+    public Servo clawServo = null;
 
     public TouchSensor magStopBottom = null, magStopMid = null, magStopTop = null;
+
+    public DistanceSensor backDist = null;
 
 //    public static final double grabber_min = 0;
 //    public static final double grabber_max = 0.75;
@@ -37,16 +41,19 @@ public class rebornHardware
         rotateLeft = hwMap.get(DcMotor.class, "rotateLeft");
         rotateRight = hwMap.get(DcMotor.class, "rotateRight");
 
-        liftMotor = hwMap.get(DcMotor.class, "liftMotor");
+//        liftMotor = hwMap.get(DcMotor.class, "liftMotor");
         duckSpinner = hwMap.get(DcMotor.class, "duckSpinner");
 
 
         clawServo = hwMap.get(Servo.class, "clawServo");
-        dropServo = hwMap.get(Servo.class, "dropServo");
+//        dropServo = hwMap.get(Servo.class, "dropServo");
 
         magStopBottom = hwMap.touchSensor.get("magStopBottom");
         magStopMid = hwMap.touchSensor.get("magStopMid");
         magStopTop = hwMap.touchSensor.get("magStopTop");
+
+        backDist = hwMap.get(DistanceSensor.class, "backDist");
+
 
 
 
@@ -61,7 +68,7 @@ public class rebornHardware
         rotateLeft.setDirection(DcMotor.Direction.FORWARD);
         rotateRight.setDirection(DcMotor.Direction.REVERSE);
 
-        liftMotor.setDirection(DcMotor.Direction.FORWARD);//currently a guess
+//        liftMotor.setDirection(DcMotor.Direction.FORWARD);//currently a guess
         duckSpinner.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set all motors to zero power
@@ -73,7 +80,7 @@ public class rebornHardware
         rotateLeft.setPower(0);
         rotateRight.setPower(0);
 
-        liftMotor.setPower(0);
+//        liftMotor.setPower(0);
         duckSpinner.setPower(0);
 
         clawServo.setPosition(0);
@@ -87,7 +94,7 @@ public class rebornHardware
         rotateLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rotateRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//doesnt have an encoder as of 1/13, but will eventually
+//        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//doesnt have an encoder as of 1/13, but will eventually
         duckSpinner.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 

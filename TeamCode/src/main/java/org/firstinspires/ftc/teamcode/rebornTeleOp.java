@@ -8,6 +8,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 //  DRIVING MECANUM WHEELS SIMPLIFIED         
 //             @TeleOp
@@ -84,6 +86,8 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
+
+        telemetry.addData("Distance from Back", robot.backDist.getDistance(DistanceUnit.CM));
         telemetry.addData("Touch Sensor Pressed", robot.magStopBottom.getValue());//should indicate whether the touch sensor is pressed.
 
 
