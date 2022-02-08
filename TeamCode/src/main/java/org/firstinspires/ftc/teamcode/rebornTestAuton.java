@@ -47,7 +47,7 @@ public class rebornTestAuton extends rebornDriving{
         currentDist = robot.backDist.getDistance(DistanceUnit.CM);
 
         if (currentDist> goalDist+2.0){
-            robot.frontLeft.setPower(-power );//this isn't moving backwards for some reason we'll figure out later. XOXO Quyen, Feb7
+            robot.frontLeft.setPower(-power );//this isn't moving backwards for some reason we'll figure out later. XOXO Quyen, Feb 7
             robot.frontRight.setPower(-power );
             robot.backLeft.setPower(-power);
             robot.backRight.setPower(-power);
