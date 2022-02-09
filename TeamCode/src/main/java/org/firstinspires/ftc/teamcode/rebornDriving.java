@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class rebornDriving extends LinearOpMode {
 
 
@@ -54,6 +56,49 @@ public class rebornDriving extends LinearOpMode {
         robot.rotateRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rotateRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+    }
+
+    public void distanceMove(double distance, boolean relativeMove){
+        double reversePercent = 1; //speed percentage when going backward
+        double power = .1; //this is the power for the 2022 neverest20 motors
+
+        //measure and calculate the starting and goal distances based on relative and absolute movement
+        //RELATIVE (relative move = true): move 20 cm from where I am now (if you start 10 cm from the wall, you will move 20 cm to a total of 30 cm)
+        //ABSOLUTE (relative move = false): move until you are 20 cm from wall (if you start 10 cm from the wall, you will move 10cm, to a total of 20 cm)
+
+        double startingDist = robot.backDist.getDistance(DistanceUnit.CM);
+        double goalDist = distance;
+        if(relativeMove) {
+            goalDist+=startingDist;
+        }
+
+
+
+        double currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+
+        while (currentDist<=goalDist){//until the current dist is greater than the goal
+            robot.frontLeft.setPower(power);
+            robot.frontRight.setPower(power);
+            robot.backLeft.setPower(power);
+            robot.backRight.setPower(power);
+            currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist", currentDist);
+            telemetry.update();
+        }
+        motorStop();
+        sleep(200);
+        currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+
+        if (currentDist> goalDist+2.0){//this may or may not be working, but the code is precise enough that right now, we don't have to worry XOXO Quyen Feb7, 2022
+            robot.frontLeft.setPower(-power *reversePercent);
+            robot.frontRight.setPower(-power *reversePercent );
+            robot.backLeft.setPower(-power *reversePercent);
+            robot.backRight.setPower(-power *reversePercent);
+            currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist (reverse)", currentDist);
+            telemetry.update();
+        }
+        motorStop();
     }
 
     public void move(double power, char direction, double distance){

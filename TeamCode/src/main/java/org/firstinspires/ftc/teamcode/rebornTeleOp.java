@@ -86,6 +86,13 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
+        double clawDistanceMeasure = robot.clawDist.getDistance(DistanceUnit.MM);
+        double sensorDistance = 105;
+        telemetry.addData("Claw Distance", clawDistanceMeasure);
+
+
+
+
 
         telemetry.addData("Distance from Back", robot.backDist.getDistance(DistanceUnit.CM));
         telemetry.addData("Touch Sensor Pressed", robot.magStopBottom.getValue());//should indicate whether the touch sensor is pressed.
