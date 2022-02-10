@@ -84,7 +84,7 @@ public class rebornHardware
 //        liftMotor.setPower(0);
         duckSpinner.setPower(0);
 
-        clawServo.setPosition(0);
+        clawServo.setPosition(.15);
         // RUN TO POSITION
         // Set all motors to run with encoders if applicable.
         // May want to use RUN_USING_ENCODERS if encoders are installed.

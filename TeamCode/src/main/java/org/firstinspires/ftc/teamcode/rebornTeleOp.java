@@ -87,7 +87,6 @@ public class rebornTeleOp extends OpMode {
     public void mecanumMove()
     {
         double clawDistanceMeasure = robot.clawDist.getDistance(DistanceUnit.MM);
-        double sensorDistance = 105;
         telemetry.addData("Claw Distance", clawDistanceMeasure);
 
 
@@ -189,13 +188,14 @@ public class rebornTeleOp extends OpMode {
         //======================================
 
         if (gamepad1.right_trigger>.1){
-            robot.clawServo.setPosition(0);
+            robot.clawServo.setPosition(.15);
             telemetry.addData("Claw State", "Squeeeze");//squeeze is close
         }
         else {
-            robot.clawServo.setPosition(.15);
+            robot.clawServo.setPosition(.5);
             telemetry.addData("Claw State", "Sigh");//sigh is release
         }
+
 
         telemetry.update();
     }
