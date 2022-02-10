@@ -72,7 +72,9 @@ public class rebornDriving extends LinearOpMode {
             goalDist+=startingDist;
         }
 
-
+        long currentTime = System.currentTimeMillis();
+        long timeOutTime = 7000L;
+        long totalTime = currentTime + timeOutTime;
 
         double currentDist = robot.backDist.getDistance(DistanceUnit.CM);
 
@@ -84,6 +86,10 @@ public class rebornDriving extends LinearOpMode {
             currentDist = robot.backDist.getDistance(DistanceUnit.CM);
             telemetry.addData("Current Dist", currentDist);
             telemetry.update();
+
+            if (totalTime < System.currentTimeMillis()){
+                return;
+            }
         }
         motorStop();
         sleep(200);
@@ -97,6 +103,9 @@ public class rebornDriving extends LinearOpMode {
             currentDist = robot.backDist.getDistance(DistanceUnit.CM);
             telemetry.addData("Current Dist (reverse)", currentDist);
             telemetry.update();
+            if (totalTime < System.currentTimeMillis()){
+                return;
+            }
         }
         motorStop();
     }
@@ -541,7 +550,7 @@ public class rebornDriving extends LinearOpMode {
 
         double precisePower = .03;//powers of the motor in different modes
         double roughPower = .05;
-        double correctionSpeed = .03;
+        double correctionSpeed = .1;
 
         int waitTime = 100;
         int distanceCutoff = 2000;
@@ -621,8 +630,8 @@ public class rebornDriving extends LinearOpMode {
         }
 
         while (currentPosition + correctionError < targetPosition){//once it is close, it goes back up until it is within 1 cm.
-            robot.rotateLeft.setPower(-roughPower);
-            robot.rotateRight.setPower(-roughPower);
+            robot.rotateLeft.setPower(-correctionSpeed);
+            robot.rotateRight.setPower(-correctionSpeed);
 
             currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
 

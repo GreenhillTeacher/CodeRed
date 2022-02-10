@@ -88,34 +88,54 @@ public class rebornBlueDuck extends rebornDriving {
         //=======================
         //--actual code----------
         //=======================--------------------------------------------------------
-        int duckPos = duckDetection();
-        telemetry.addData("Duck Pos", duckPos);
+        int duckLevel = duckDetection();
+        telemetry.addData("Duck Pos", duckLevel);
         telemetry.update();
 
-        move(.3, 'r', 7);
-        switch(duckPos){
-            case 3:
-                lift(3.2, -1, 350);//400 if starting from bottom 250 starting otherwise
-                lift(.8, duckPos, 2000);
+        move(.5, 'r', 15);
+
+        int lateralMoveDistance = 20;
+        switch(duckLevel){//moves to the alliance shipping hub based on what it reads
+            case (1)://Warehouse close. Scoring level 1. Bottom
+                levelLift('l');
+                rotate(.5, 'r', 100);
+                move(.6, 'l', lateralMoveDistance);
+                distanceMove(20, false);
                 break;
-            case 2:
-                lift(3.2, -1, 350);
-                lift(.5, duckPos, 1000);
+            case (2)://Mid. Scoring level 2. Mid
+                levelLift('m');
+                rotate(.5, 'r', 100);
+                move(.6, 'l', lateralMoveDistance);
+                distanceMove(25, false);
                 break;
-            case 1:
-                lift(3.2, -1, 350);
-                lift(.5, duckPos, 1000);
-                lift(.05, duckPos, 2000);
+            case (3):
+                levelLift('t');
+                rotate(.5, 'r', 100);
+                move(.6, 'l', lateralMoveDistance);
+                distanceMove(40, false);
                 break;
             default:
                 break;
         }
+
+        robot.clawServo.setPosition(0.5);
         sleep(200);
-        rotate(.3, 'r', 100);
-        move(.3, 'l', 20);
-        sleep(200);
-        move(.3, 'f', 15);
         robot.clawServo.setPosition(.15);
+        sleep(200);
+        robot.clawServo.setPosition(.5);
+        //move(0.5,'b',10);
+        levelLift('t');
+        distanceMove(5,false);
+
+        rotate(0.5, 'r', 100);
+
+        move(0.5,'f',30);
+
+        robot.duckSpinner.setPower(.1);
+        sleep(2000);
+        robot.duckSpinner.setPower(0);
+
+        rotate(0.5, 'l',90);
 
 
 

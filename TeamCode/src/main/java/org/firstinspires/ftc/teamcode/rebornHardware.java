@@ -17,7 +17,7 @@ public class rebornHardware
     public DcMotor  frontLeft   = null, frontRight  = null, backLeft   = null, backRight  = null, rotateLeft = null, rotateRight = null, duckSpinner = null;
     //public DcMotor  pulleyMotor0 = null, pulleyMotor1=null, carousel = null;
     //public CRServo extenderServo = null;
-    public Servo clawServo = null;
+    public Servo clawServo = null, chuteServo = null;
 
     public TouchSensor magStopBottom = null, magStopMid = null, magStopTop = null;
 
@@ -46,6 +46,7 @@ public class rebornHardware
 
 
         clawServo = hwMap.get(Servo.class, "clawServo");
+        chuteServo = hwMap.get(Servo.class, "chuteServo");
 //        dropServo = hwMap.get(Servo.class, "dropServo");
 
         magStopBottom = hwMap.touchSensor.get("magStopBottom");
@@ -83,7 +84,7 @@ public class rebornHardware
 
 //        liftMotor.setPower(0);
         duckSpinner.setPower(0);
-
+        chuteServo.setPosition(.5);
         clawServo.setPosition(.15);
         // RUN TO POSITION
         // Set all motors to run with encoders if applicable.

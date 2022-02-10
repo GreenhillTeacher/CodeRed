@@ -38,7 +38,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import java.time.Clock;
@@ -102,6 +107,9 @@ public class duckDetectTest extends rebornDriving {
      */
     private TFObjectDetector tfod;
 
+    OpenGLMatrix targetPose = null;
+    String targetName = "";
+
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
@@ -129,7 +137,34 @@ public class duckDetectTest extends rebornDriving {
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+
+        // Turn off Extended tracking.  Set this true if you want Vuforia to track beyond the target.
+        parameters.useExtendedTracking = false;
+
+        // Connect to the camera we are to use.  This name must match what is set up in Robot Configuration
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Load the trackable objects from the Assets file, and give them meaningful names
+        VuforiaTrackables targetsFreightFrenzy = this.vuforia.loadTrackablesFromAsset("FreightFrenzy");
+        targetsFreightFrenzy.get(0).setName("Blue Storage");
+        targetsFreightFrenzy.get(1).setName("Blue Alliance Wall");
+        targetsFreightFrenzy.get(2).setName("Red Storage");
+        targetsFreightFrenzy.get(3).setName("Red Alliance Wall");
+
+        // Start tracking targets in the background
+        targetsFreightFrenzy.activate();
         waitForStart();
+
+        boolean targetFound = false;    // Set to true when a target is detected by Vuforia
+        double targetRange = 0;        // Distance from camera to target in Inches
+        double targetBearing = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
 
         int duckLevel = -1;
 
@@ -140,18 +175,95 @@ public class duckDetectTest extends rebornDriving {
             //-----DOPE VUFORIA STUFF-------
             //==============================
 
-            duckLevel = duckDetection();
+            duckLevel = duckDetection();//reads the duck's postition
 
-            switch(duckLevel){
-                case (1):
-                    move(.6, 'f', 7);
-                case (2):
-                    move(.6, 'r', 7);
+            switch(duckLevel){//moves to the alliance shipping hub based on what it reads
+                case (1)://Warehouse close. Scoring level 1. Bottom
+                    levelLift('l');
+                    rotate(.5, 'r', 100);
+                    move(.6, 'l', 7);
+                    distanceMove(20, false);
+                case (2)://Mid. Scoring level 2. Mid
+                    levelLift('m');
+                    rotate(.5, 'r', 100);
+                    move(.6, 'l', 7);
+                    distanceMove(25, false);
                 case (3):
-                    move (.6, 'b', 4);
+                    levelLift('t');
+                    rotate(.5, 'r', 100);
+                    move(.6, 'l', 7);
+                    distanceMove(40, false);
                 default:
                     break;
             }
+
+            robot.clawServo.setPosition(0.5);
+            move(0.5,'b',10);
+            levelLift('t');
+            distanceMove(5,false);
+
+            rotate(0.5, 'r', 100);
+
+            move(0.5,'f',30);
+
+            robot.duckSpinner.setPower(.1);
+            sleep(2000);
+            robot.duckSpinner.setPower(0);
+
+            rotate(0.5, 'l',90);
+
+            //==============================
+            //------Move to the Image-------
+            //==============================
+
+            //continue until the image is seen
+            targetFound = false;
+            while (!targetFound) {
+                //move a little each time the image is not seen
+                move(.6, 'f', 2);
+
+                //looks for the image
+                for (VuforiaTrackable trackable : targetsFreightFrenzy) {
+                    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                        targetPose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getVuforiaCameraFromTarget();
+                        //MOVE BACKWARD LOOKING FOR THE PICTURE
+                        // if we have a target, process the "pose" to determine the position of the target relative to the robot.
+                        if (targetPose != null) {
+                            targetFound = true;
+                            targetName = trackable.getName();
+                            VectorF trans = targetPose.getTranslation();
+
+                            // Extract the X & Y components of the offset of the target relative to the robot
+                            double targetX = trans.get(0) / MM_PER_INCH; // Image X axis
+                            double targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
+
+                            // target range is based on distance from robot position to origin (right triangle).
+                            targetRange = Math.hypot(targetX, targetY);
+
+                            // target bearing is based on angle formed between the X axis and the target range line
+                            targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
+
+                            break;  // jump out of target tracking loop if we find a target.
+                        }
+                    }
+                }
+            }
+
+            // Tell the driver what we see, and what to do.
+            if (targetFound) {
+                telemetry.addData(">", "HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("Target", " %s", targetName);
+                telemetry.addData("Range", "%5.1f inches", targetRange);
+                telemetry.addData("Bearing", "%3.0f degrees", targetBearing);
+            } else {
+                telemetry.addData(">", "Drive using joystick to find target\n");
+            }
+            telemetry.update();
+            //move(1,'b',2);
+//        move(1, 'r', 7);
+            reset();
+            move(1, 'r', targetRange-.5);
+//            move(0.5,)
         }
     }
 
