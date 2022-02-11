@@ -6,18 +6,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name="Blue - Duck Detect and Place", group="Reborn Blue")
-public class rebornBlueDuck extends rebornDriving {
+@Autonomous(name="Red - Duck Detect and Place", group="Reborn Red")
+public class rebornRedDuck extends rebornDriving {
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] LABELS = {
             "Ball",
@@ -91,31 +87,29 @@ public class rebornBlueDuck extends rebornDriving {
         int duckLevel = duckDetection();
         telemetry.addData("Duck Pos", duckLevel);
         telemetry.update();
-        sleep(1000);
         telemetry.addData("Action", "Initial Move");
         telemetry.update();
         strafeMove(40, false);
-        sleep(1000);
 
-        int lateralMoveDistance = 25;
+        int lateralMoveDistance = 21;
         int angleAmount = 95;
         switch(duckLevel){//moves to the alliance shipping hub based on what it reads
             case (1)://Warehouse close. Scoring level 1. Bottom
                 levelLift('l');
                 rotate(.5, 'r', angleAmount);
-                move(.6, 'l', lateralMoveDistance-2);
+                move(.6, 'r', lateralMoveDistance-2);
                 distanceMove(20, false);
                 break;
             case (2)://Mid. Scoring level 2. Mid
                 levelLift('m');
                 rotate(.5, 'r', angleAmount);
-                move(.6, 'l', lateralMoveDistance);
+                move(.6, 'r', lateralMoveDistance);
                 distanceMove(25, false);
                 break;
             case (3):
                 levelLift('t');
                 rotate(.5, 'r', angleAmount);
-                move(.6, 'l', lateralMoveDistance+2);
+                move(.6, 'r', lateralMoveDistance+2);
                 distanceMove(45, false);
                 break;
             default:
@@ -124,32 +118,32 @@ public class rebornBlueDuck extends rebornDriving {
 
 
         robot.clawServo.setPosition(0.5);
-        sleep(200);
+        sleep(100);
         robot.clawServo.setPosition(.15);
-        sleep(200);
+        sleep(100);
         robot.clawServo.setPosition(.5);
-        move(.3, 'b', 10);
+        move(.3, 'b', 5);
         //move(0.5,'b',10);
         if (duckLevel!=3) {
             levelLift('t');
         }
 
-        rotate(0.5, 'r', 90);
-        move(.3, 'l', 4);
+        rotate(0.5, 'r', 180);
 
         //this section is specifically to deliver ducks.
-        move(0.4,'f',45);
+        move(0.6,'r',45);
+        move(.2, 'f', 3);
+        move(.2, 'r', 3);
 
-        robot.duckSpinner.setPower(-.1);
-        sleep(2000);
+        robot.duckSpinner.setPower(.1);
+        sleep(2500);
         robot.duckSpinner.setPower(0);
-        move(.3, 'b', 5);
+        move(.3, 'l', 5);
+        rotate(0.5, 'l',190);
 
-        rotate(0.5, 'l',100);
+        distanceMove(75, false);
 
-        distanceMove(65, false);
-
-        move(0.4,'r',10);
+        move(0.4,'l',17);
 
 
 

@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class rebornDriving extends LinearOpMode {
 
 
@@ -56,6 +58,108 @@ public class rebornDriving extends LinearOpMode {
 
     }
 
+    public void distanceMove(double distance, boolean relativeMove){
+        double reversePercent = 1; //speed percentage when going backward
+        double power = .1; //this is the power for the 2022 neverest20 motors
+
+        //measure and calculate the starting and goal distances based on relative and absolute movement
+        //RELATIVE (relative move = true): move 20 cm from where I am now (if you start 10 cm from the wall, you will move 20 cm to a total of 30 cm)
+        //ABSOLUTE (relative move = false): move until you are 20 cm from wall (if you start 10 cm from the wall, you will move 10cm, to a total of 20 cm)
+
+        double startingDist = robot.backDist.getDistance(DistanceUnit.CM);
+        double goalDist = distance;
+        if(relativeMove) {
+            goalDist+=startingDist;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long timeOutTime = 7000L;
+        long totalTime = currentTime + timeOutTime;
+
+        double currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+
+        while (currentDist<=goalDist){//until the current dist is greater than the goal
+            robot.frontLeft.setPower(power);
+            robot.frontRight.setPower(power);
+            robot.backLeft.setPower(power);
+            robot.backRight.setPower(power);
+            currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist", currentDist);
+            telemetry.update();
+
+//            if (totalTime < System.currentTimeMillis()){
+//                return;
+//            }
+        }
+        motorStop();
+        sleep(200);
+        currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+
+        if (currentDist> goalDist+2.0){//this may or may not be working, but the code is precise enough that right now, we don't have to worry XOXO Quyen Feb7, 2022
+            robot.frontLeft.setPower(-power *reversePercent);
+            robot.frontRight.setPower(-power *reversePercent );
+            robot.backLeft.setPower(-power *reversePercent);
+            robot.backRight.setPower(-power *reversePercent);
+            currentDist = robot.backDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist (reverse)", currentDist);
+            telemetry.update();
+//            if (totalTime < System.currentTimeMillis()){
+//                return;
+//            }
+        }
+        motorStop();
+    }
+    public void strafeMove(double distance, boolean relativeMove){
+        double reversePercent = 1; //speed percentage when going backward
+        double power = .1; //this is the power for the 2022 neverest20 motors
+
+        //measure and calculate the starting and goal distances based on relative and absolute movement
+        //RELATIVE (relative move = true): move 20 cm from where I am now (if you start 10 cm from the wall, you will move 20 cm to a total of 30 cm)
+        //ABSOLUTE (relative move = false): move until you are 20 cm from wall (if you start 10 cm from the wall, you will move 10cm, to a total of 20 cm)
+
+        double startingDist = robot.backDist.getDistance(DistanceUnit.CM);
+        double goalDist = distance;
+        if(relativeMove) {
+            goalDist+=startingDist;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long timeOutTime = 7000L;
+        long totalTime = currentTime + timeOutTime;
+
+        double currentDist = robot.strafeDist.getDistance(DistanceUnit.CM);
+
+        while (currentDist<=goalDist){//until the current dist is greater than the goal
+            robot.frontLeft.setPower(power);
+            robot.frontRight.setPower(-power);
+            robot.backLeft.setPower(-power);
+            robot.backRight.setPower(power);
+            currentDist = robot.strafeDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist", currentDist);
+            telemetry.update();
+
+//            if (totalTime < System.currentTimeMillis()){
+//                return;
+//            }
+        }
+        motorStop();
+        sleep(200);
+        currentDist = robot.strafeDist.getDistance(DistanceUnit.CM);
+
+        if (currentDist> goalDist+2.0){//this may or may not be working, but the code is precise enough that right now, we don't have to worry XOXO Quyen Feb7, 2022
+            robot.frontLeft.setPower(-power *reversePercent);
+            robot.frontRight.setPower(power *reversePercent );
+            robot.backLeft.setPower(power *reversePercent);
+            robot.backRight.setPower(-power *reversePercent);
+            currentDist = robot.strafeDist.getDistance(DistanceUnit.CM);
+            telemetry.addData("Current Dist (reverse)", currentDist);
+            telemetry.update();
+//            if (totalTime < System.currentTimeMillis()){
+//                return;
+//            }
+        }
+        motorStop();
+    }
     public void move(double power, char direction, double distance){
         double ticks = COUNTS_PER_INCH * distance/3;
 //        double ticks = 7.5* distance;
@@ -487,5 +591,118 @@ public class rebornDriving extends LinearOpMode {
 //        telemetry.addData("OUT", "YUP");
 //        telemetry.update();
 //        motorStop();
+    }
+
+    public void levelLift (char clawTarget){
+        double lowPosition = 90;//target positions, in mm
+        double midPosition = 108;
+        double highPosition = 243;
+
+        double precisePower = .03;//powers of the motor in different modes
+        double roughPower = .05;
+        double correctionSpeed = .1;
+
+        int waitTime = 100;
+        int distanceCutoff = 2000;
+
+        double targetPosition;
+
+        switch (clawTarget){//sets the target based on the user's input
+            case 'l':
+            case 'b':
+                targetPosition = lowPosition;
+                break;
+            case 'm':
+                targetPosition = midPosition;
+                break;
+            case 't':
+            case 'h':
+                targetPosition = highPosition;
+                break;
+            default:
+                targetPosition = 3000;//this is a test number. Should read very high if not pointing at anything.
+        }
+
+        double currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+        motorStop();
+
+        while (currentPosition - 500 > targetPosition){//if the current position is 50 cm more than the target position, it moves very speedily to get there
+            robot.rotateLeft.setPower(roughPower);//it should only be that large if the claw is in the upward position.
+            robot.rotateRight.setPower(roughPower);
+
+            currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+            telemetry.addData("Mode:", "Rough Movement");
+            telemetry.addData("Target Position:", targetPosition);
+            telemetry.addData("Current Position:", currentPosition);
+            telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+            telemetry.update();
+        }
+
+        motorStop();
+
+        sleep(waitTime);
+        telemetry.addData("Mode:", "Waiting for Fine");
+        telemetry.addData("Target Position:", targetPosition);
+        telemetry.addData("Current Position:", currentPosition);
+        telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+        telemetry.update();
+        sleep(waitTime);
+        currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+
+        while (currentPosition > targetPosition){//once it gets closer, it slows down
+            robot.rotateLeft.setPower(precisePower);
+            robot.rotateRight.setPower(precisePower);
+
+            currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+            telemetry.addData("Mode:", "Fine Movement");
+            telemetry.addData("Target Position:", targetPosition);
+            telemetry.addData("Current Position:", currentPosition);
+            telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+            telemetry.update();
+        }
+        motorStop();
+        sleep(waitTime);
+        telemetry.addData("Mode:", "Waiting for Correct");
+        telemetry.addData("Target Position:", targetPosition);
+        telemetry.addData("Current Position:", currentPosition);
+        telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+        telemetry.update();
+        sleep(waitTime);
+        currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+        int correctionError = 10;
+        if (clawTarget == 't'||clawTarget=='h'){
+            correctionError = 0;
+        }
+
+        while (currentPosition + correctionError < targetPosition){//once it is close, it goes back up until it is within 1 cm.
+            robot.rotateLeft.setPower(-correctionSpeed);
+            robot.rotateRight.setPower(-correctionSpeed);
+
+            currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+
+            telemetry.addData("Mode:", "Correction Movement");
+            telemetry.addData("Target Position:", targetPosition);
+            telemetry.addData("Current Position:", currentPosition);
+            telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+            telemetry.update();
+
+            if((int)currentPosition > distanceCutoff){//if it gets super high, it will (hopefully) stop.
+                break;
+            }
+        }
+        motorStop();
+        sleep(waitTime);
+        currentPosition = robot.clawDist.getDistance(DistanceUnit.MM);
+        telemetry.addData("Mode:", "Done");
+        telemetry.addData("Target Position:", targetPosition);
+        telemetry.addData("Current Position:", currentPosition);
+        telemetry.addData("Distance Left:", Math.abs(targetPosition-currentPosition));
+        telemetry.update();
+        sleep(waitTime);
     }
 }

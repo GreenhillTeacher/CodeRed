@@ -150,10 +150,10 @@ public class rebornRedSpinner extends rebornDriving {
         move(.05, 'r', 1);
 
         //spin the duck
-        robot.duckSpinner.setPower(-0.1);
+        robot.duckSpinner.setPower(0.1);
         sleep(500);
-        move(.1, 'r', 2);
-        sleep(500);
+//        move(.1, 'r', 2);
+        sleep(1500);
         robot.duckSpinner.setPower(0);
         motorStop();
 

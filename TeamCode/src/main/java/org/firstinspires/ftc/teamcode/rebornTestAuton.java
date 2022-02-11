@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @Autonomous(name="Single Operation", group="reborn")
 //@Disabled
 public class rebornTestAuton extends rebornDriving{
@@ -11,15 +13,7 @@ public class rebornTestAuton extends rebornDriving{
         robot.init(hardwareMap);
 
         waitForStart();
-
-        int testDist = 2;
-
-        motorStop();
-        lift(3.2, -1, 350);//400 if starting from bottom 250 starting otherwise
-        lift(1, 2, 2000);
-//        lift(0.08, 1, 2000);
-        sleep(1500);
-        robot.clawServo.setPosition(.15);
+        strafeMove(50, false);
 
     }
 }

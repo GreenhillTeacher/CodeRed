@@ -8,6 +8,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 //  DRIVING MECANUM WHEELS SIMPLIFIED         
 //             @TeleOp
@@ -84,6 +86,9 @@ public class rebornTeleOp extends OpMode {
 
     public void mecanumMove()
     {
+        double clawDistanceMeasure = robot.clawDist.getDistance(DistanceUnit.MM);
+        telemetry.addData("Claw Distance", clawDistanceMeasure);
+        telemetry.addData("Distance from Back", robot.backDist.getDistance(DistanceUnit.CM));
         telemetry.addData("Touch Sensor Pressed", robot.magStopBottom.getValue());//should indicate whether the touch sensor is pressed.
 
 
@@ -91,19 +96,38 @@ public class rebornTeleOp extends OpMode {
         //------------WHEEL CODE----------------
         //======================================
         {
+            double stickX = 0;
+            double stickY = 0;
+            double stickR = 0;
+            if (Math.abs(gamepad1.left_stick_x) + Math.abs(gamepad1.left_stick_y)> Math.abs(gamepad2.left_stick_x) + Math.abs(gamepad2.left_stick_y)){
+                stickX = gamepad1.left_stick_x;
+                stickY = gamepad1.left_stick_y;
+            }
+            else{
+                stickX = gamepad2.left_stick_x;
+                stickY = gamepad2.left_stick_y;
+            }
+
+            if (Math.abs(gamepad1.right_stick_x) > Math.abs(gamepad2.right_stick_x)){
+                stickR = gamepad1.right_stick_x;
+            }
+            else {
+                stickR = gamepad2.right_stick_x;
+            }
+
             //variables
-            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y); //ur mom is watching you from the ceiling. dont look up...
-            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = -gamepad1.right_stick_x * turnReduction;
+            double r = Math.hypot(-stickX, stickY); //ur mom is watching you from the ceiling. dont look up...
+            double robotAngle = Math.atan2(stickY, -stickX) - Math.PI / 4;
+            double rightX = -stickR * turnReduction;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX; //the swedes are coming 4 u soon
             final double v4 = r * Math.cos(robotAngle) - rightX;
 
 
-            if (gamepad1.left_bumper) {//if the left bumper is pressed, it multiplies the total power by the precision driving modifer
+            if (gamepad1.left_bumper || gamepad2.left_bumper) {//if the left bumper is pressed, it multiplies the total power by the precision driving modifer
                 precisionActive = reductionModifier;
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 precisionActive = turboModifier;//right bumper = turbo mode (for crossing the barriers)
             } else {
                 precisionActive = 1f; //no modifier
@@ -133,12 +157,12 @@ public class rebornTeleOp extends OpMode {
         //----------QUACK DELIVERY--------------
         //======================================
 
-        if (gamepad1.y){
-            robot.duckSpinner.setPower(1);
+        if (gamepad1.y || gamepad2.y){
+            robot.duckSpinner.setPower(.1*precisionActive);
             telemetry.addData("Duck Spinner", "Wheeeee");
         }
-        else if (gamepad1.x){
-            robot.duckSpinner.setPower(-1);
+        else if (gamepad1.x || gamepad2.x){
+            robot.duckSpinner.setPower(-.1*precisionActive);
             telemetry.addData("Duck Spinner", "Down"); //hello. i am watching.
 
         }
@@ -152,11 +176,11 @@ public class rebornTeleOp extends OpMode {
         //======================================
 
 
-        if (gamepad1.dpad_up) {
+        if (gamepad1.dpad_up || gamepad2.dpad_up) {
             robot.rotateRight.setPower(-.2 * precisionActive);
             robot.rotateLeft.setPower(-.2 * precisionActive);
             telemetry.addData("Rotator State", "Up"); //be careful wherever you go.
-        } else if (gamepad1.dpad_down && (robot.magStopBottom.getValue() == 0.0 || gamepad1.left_bumper)) {
+        } else if ((gamepad1.dpad_down||gamepad2.dpad_down) && (robot.magStopBottom.getValue() == 0.0 || (gamepad1.left_bumper||gamepad2.left_bumper))) {
             robot.rotateRight.setPower(.05 * precisionActive);
             robot.rotateLeft.setPower(.05 * precisionActive);
             telemetry.addData("Rotator State", "Down");
@@ -165,6 +189,13 @@ public class rebornTeleOp extends OpMode {
             robot.rotateRight.setPower(0);
             robot.rotateLeft.setPower(0);
             telemetry.addData("Rotator State", "Off"); // r u watching behind you
+        }
+
+        if(gamepad1.a || gamepad2.a){
+            robot.chuteServo.setPosition(1);
+        }
+        else {
+            robot.chuteServo.setPosition(0.5);
         }
 
         telemetry.addLine();
@@ -177,14 +208,15 @@ public class rebornTeleOp extends OpMode {
         //----------CLAW ACTIVATION-------------
         //======================================
 
-        if (gamepad1.right_trigger>.1){
-            robot.clawServo.setPosition(0);
+        if (Math.max(gamepad1.right_trigger, gamepad2.right_trigger)>.1){
+            robot.clawServo.setPosition(.15);
             telemetry.addData("Claw State", "Squeeeze");//squeeze is close
         }
         else {
-            robot.clawServo.setPosition(.15);
+            robot.clawServo.setPosition(.45);
             telemetry.addData("Claw State", "Sigh");//sigh is release
         }
+
 
         telemetry.update();
     }
