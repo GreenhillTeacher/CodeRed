@@ -21,7 +21,7 @@ public class rebornHardware
 
     public TouchSensor magStopBottom = null, magStopMid = null, magStopTop = null;
 
-    public DistanceSensor backDist = null, clawDist = null;
+    public DistanceSensor backDist = null, clawDist = null, strafeDist = null;
 
 //    public static final double grabber_min = 0;
 //    public static final double grabber_max = 0.75;
@@ -55,6 +55,7 @@ public class rebornHardware
 
         backDist = hwMap.get(DistanceSensor.class, "backDist");
         clawDist = hwMap.get(DistanceSensor.class, "clawDist");
+        strafeDist = hwMap.get(DistanceSensor.class, "strafeDist");
 
 
 
