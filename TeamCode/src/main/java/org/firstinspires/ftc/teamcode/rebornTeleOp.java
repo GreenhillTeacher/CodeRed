@@ -192,7 +192,7 @@ public class rebornTeleOp extends OpMode {
         }
 
         if(gamepad1.a || gamepad2.a){
-            robot.chuteServo.setPosition(0);
+            robot.chuteServo.setPosition(1);
         }
         else {
             robot.chuteServo.setPosition(0.5);
