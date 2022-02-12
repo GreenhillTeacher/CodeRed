@@ -112,7 +112,7 @@ public class rebornBlueDuck extends rebornDriving {
                 move(.6, 'l', lateralMoveDistance);
                 distanceMove(25, false);
                 break;
-            case (3):
+            case (3)://warehouse far. scoring level 3 top
                 levelLift('t');
                 rotate(.5, 'r', angleAmount);
                 move(.6, 'l', lateralMoveDistance+2);
