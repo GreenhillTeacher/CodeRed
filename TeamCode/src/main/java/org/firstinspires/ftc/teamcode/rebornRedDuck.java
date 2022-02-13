@@ -132,7 +132,7 @@ public class rebornRedDuck extends rebornDriving {
 
         //this section is specifically to deliver ducks.
         move(0.6,'r',45);
-        move(.2, 'f', 3);
+        move(.2, 'f', 15);
         move(.2, 'r', 3);
 
         robot.duckSpinner.setPower(.1);
@@ -141,7 +141,7 @@ public class rebornRedDuck extends rebornDriving {
         move(.3, 'l', 5);
         rotate(0.5, 'l',190);
 
-        distanceMove(75, false);
+        distanceMove(73, false);
 
         move(0.4,'l',17);
 

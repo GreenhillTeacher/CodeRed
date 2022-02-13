@@ -91,11 +91,10 @@ public class rebornBlueDuck extends rebornDriving {
         int duckLevel = duckDetection();
         telemetry.addData("Duck Pos", duckLevel);
         telemetry.update();
-        sleep(1000);
         telemetry.addData("Action", "Initial Move");
         telemetry.update();
         strafeMove(40, false);
-        sleep(1000);
+        sleep(2000);
 
         int lateralMoveDistance = 25;
         int angleAmount = 95;
@@ -139,6 +138,7 @@ public class rebornBlueDuck extends rebornDriving {
 
         //this section is specifically to deliver ducks.
         move(0.4,'f',45);
+        move (.2, 'r', 5);//untested
 
         robot.duckSpinner.setPower(-.1);
         sleep(2000);

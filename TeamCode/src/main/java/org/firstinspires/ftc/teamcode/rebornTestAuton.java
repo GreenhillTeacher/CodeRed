@@ -13,7 +13,7 @@ public class rebornTestAuton extends rebornDriving{
         robot.init(hardwareMap);
 
         waitForStart();
-        strafeMove(50, false);
+        strafeMove(20, false);
 
     }
 }
