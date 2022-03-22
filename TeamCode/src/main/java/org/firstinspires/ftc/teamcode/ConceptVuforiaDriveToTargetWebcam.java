@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -39,9 +40,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * is explained below.
  */
 
-@TeleOp(name="Drive To Target!", group = "Concept Webcam")
+@Autonomous(name="Final Testing Webcam", group = "Concept Webcam")
 
-public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
+public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
 {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
@@ -71,11 +72,12 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
     OpenGLMatrix targetPose     = null;
     String targetName           = "";
 
-    private DcMotor leftDrive   = null;
-    private DcMotor rightDrive  = null;
+//    private DcMotor leftDrive   = null;//don't look now
+//    private DcMotor rightDrive  = null;//but something's behind you
 
     @Override public void runOpMode()
     {
+        robot.init(hardwareMap);
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * To get an on-phone camera preview, use the code below.
@@ -97,7 +99,7 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
         // Load the trackable objects from the Assets file, and give them meaningful names
         VuforiaTrackables targetsFreightFrenzy = this.vuforia.loadTrackablesFromAsset("FreightFrenzy");
         targetsFreightFrenzy.get(0).setName("Blue Storage");
-        targetsFreightFrenzy.get(1).setName("Blue Alliance Wall");
+        targetsFreightFrenzy.get(1).setName("Blue Alliance Wall");//WATCHING
         targetsFreightFrenzy.get(2).setName("Red Storage");
         targetsFreightFrenzy.get(3).setName("Red Alliance Wall");
 
@@ -125,14 +127,26 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
         double  targetBearing   = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
         double  drive           = 0;        // Desired forward power (-1 to +1)
         double  turn            = 0;        // Desired turning power (-1 to +1)
+        double targetX = 0;
+        double targetY = 0;
+
+        //move(0.1,'f',15);
+        robot.backLeft.setPower(0.1);
+        robot.frontLeft.setPower(0.1);
+        robot.backRight.setPower(0.1);
+        robot.frontRight.setPower(0.1);
+        sleep(1000);
+
+        motorStop();
 
         while (opModeIsActive())
+
         {
             // Look for first visible target, and save its pose.
             targetFound = false;
             for (VuforiaTrackable trackable : targetsFreightFrenzy)
             {
-                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())
+                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())//LEARN
                 {
                     targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
 
@@ -144,8 +158,8 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
                         VectorF trans = targetPose.getTranslation();
 
                         // Extract the X & Y components of the offset of the target relative to the robot
-                        double targetX = trans.get(0) / MM_PER_INCH; // Image X axis
-                        double targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
+                         targetX = trans.get(0) / MM_PER_INCH; // Image X axis
+                         targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
 
                         // target range is based on distance from robot positiadon to origin (right triangle).
                         targetRange = Math.hypot(targetX, targetY);
@@ -161,7 +175,7 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
             // Tell the driver what we see, and what to do.
             if (targetFound) {
                 telemetry.addData(">","HOLD Left-Bumper to Drive to Target\n");
-                telemetry.addData("Target", " %s", targetName);
+                telemetry.addData("Target", " %s", targetName);//CONSUME
                 telemetry.addData("Range",  "%5.1f inches", targetRange);
                 telemetry.addData("Bearing","%3.0f degrees", targetBearing);
             } else {
@@ -169,33 +183,40 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
             }
 
             // Drive to target Automatically if Left Bumper is being pressed, AND we have found a target.
-            if (gamepad1.left_bumper && targetFound) {
-
-                // Determine heading and range error so we can use them to control the robot automatically.
-                double  rangeError   = (targetRange - DESIRED_DISTANCE);
-                double  headingError = targetBearing;
-
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drive = rangeError * SPEED_GAIN;
-                turn  = headingError * TURN_GAIN ;
-
-                telemetry.addData("Auto","Drive %5.2f, Turn %5.2f", drive, turn);
-            } else {
-
-                // drive using manual POV Joystick mode.
-                drive = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                turn  =  gamepad1.right_stick_x / 4.0;  // Reduce turn rate to 25%.
-                telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drive, turn);
-            }
+//            if (gamepad1.left_bumper && targetFound) {
+//
+//                // Determine heading and range error so we can use them to control the robot automatically.
+//                double  rangeError   = (targetRange - DESIRED_DISTANCE);
+//                double  headingError = targetBearing;
+//
+//                // Use the speed and turn "gains" to calculate how we want the robot to move.
+//                drive = rangeError * SPEED_GAIN;
+//                turn  = headingError * TURN_GAIN ;
+//
+//                telemetry.addData("Auto","Drive %5.2f, Turn %5.2f", drive, turn);
+//            } else {
+//
+//                // drive using manual POV Joystick mode.
+//                drive = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+//                turn  =  gamepad1.right_stick_x / 4.0;  // Reduce turn rate to 25%.
+//                telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drive, turn);
+//            }
             telemetry.update();
 
-            // Calculate left and right wheel powers and send to them to the motors.
-            double leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            double rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-//            leftDrive.setPower(leftPower);
-//            rightDrive.setPower(rightPower);
+//            // Calculate left and right wheel powers and send to them to the motors.
+//            double leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
+//            double rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+////            leftDrive.setPower(leftPower);
+////            rightDrive.setPower(rightPower);
 
             sleep(10);
+
+            //if (Math.abs(targetBearing) <= 2){
+            move(0.5,'f',targetX);
+
+
+
+
         }
     }
 }

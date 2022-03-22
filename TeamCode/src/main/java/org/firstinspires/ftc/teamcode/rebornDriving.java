@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class rebornDriving extends LinearOpMode {
+public abstract class rebornDriving extends LinearOpMode {
 
 
     rebornHardware robot = new rebornHardware();   // Use a Pushbot's hardware
