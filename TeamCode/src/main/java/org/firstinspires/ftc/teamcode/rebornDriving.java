@@ -33,11 +33,6 @@ public abstract class rebornDriving extends LinearOpMode {
 
     final double MM_PER_INCH = 25.40 ;   //  Metric conversion
 
-    @Override
-    public void runOpMode(){
-
-    }
-
     public void motorStop() {
         robot.frontLeft.setPower(0);
         robot.frontRight.setPower(0);

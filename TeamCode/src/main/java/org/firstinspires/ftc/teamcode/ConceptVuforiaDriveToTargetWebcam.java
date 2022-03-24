@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+//
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -43,6 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 @Autonomous(name="Final Testing Webcam", group = "Concept Webcam")
 
 public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
+
 {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
@@ -131,17 +133,20 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
         double targetY = 0;
 
         //move(0.1,'f',15);
-        robot.backLeft.setPower(0.1);
-        robot.frontLeft.setPower(0.1);
-        robot.backRight.setPower(0.1);
-        robot.frontRight.setPower(0.1);
-        sleep(1000);
+//        robot.backLeft.setPower(0.1);
+//        robot.frontLeft.setPower(0.1);
+//        robot.backRight.setPower(0.1);
+//        robot.frontRight.setPower(0.1);
+//        sleep(1000);
+
+
 
         motorStop();
 
         while (opModeIsActive())
 
         {
+            move(0.2, 'l', 10);
             // Look for first visible target, and save its pose.
             targetFound = false;
             for (VuforiaTrackable trackable : targetsFreightFrenzy)
@@ -214,7 +219,9 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
             //if (Math.abs(targetBearing) <= 2){
             move(0.5,'f',targetX);
 
+            move(0.5,'r',targetY - 2);
 
+            //move(0.5, 'f', targetRange);
 
 
         }
