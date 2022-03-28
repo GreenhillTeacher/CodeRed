@@ -76,6 +76,10 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
 
 //    private DcMotor leftDrive   = null;//don't look now
 //    private DcMotor rightDrive  = null;//but something's behind you
+    double targetX = 0;
+    double targetY = 0;
+    double  targetRange     = 0;        // Distance from camera to target in Inches
+    double  targetBearing   = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
 
     @Override public void runOpMode()
     {
@@ -125,12 +129,9 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
         waitForStart();
 
         boolean targetFound     = false;    // Set to true when a target is detected by Vuforia
-        double  targetRange     = 0;        // Distance from camera to target in Inches
-        double  targetBearing   = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
         double  drive           = 0;        // Desired forward power (-1 to +1)
         double  turn            = 0;        // Desired turning power (-1 to +1)
-        double targetX = 0;
-        double targetY = 0;
+
 
         //move(0.1,'f',15);
 //        robot.backLeft.setPower(0.1);
@@ -142,40 +143,16 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
 
 
         motorStop();
-
+        move(0.2, 'f', 16);
         while (opModeIsActive())
 
         {
-            move(0.2, 'l', 10);
+
             // Look for first visible target, and save its pose.
-            targetFound = false;
-            for (VuforiaTrackable trackable : targetsFreightFrenzy)
-            {
-                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())//LEARN
-                {
-                    targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
+            targetFound = this.targetIsFound(targetsFreightFrenzy);
 
-                    // if we have a target, process the "pose" to determine the position of the target relative to the robot.
-                    if (targetPose != null)
-                    {
-                        targetFound = true;
-                        targetName  = trackable.getName();
-                        VectorF trans = targetPose.getTranslation();
 
-                        // Extract the X & Y components of the offset of the target relative to the robot
-                         targetX = trans.get(0) / MM_PER_INCH; // Image X axis
-                         targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
 
-                        // target range is based on distance from robot positiadon to origin (right triangle).
-                        targetRange = Math.hypot(targetX, targetY);
-
-                        // target bearing is based on angle formed between the X axis and the target range line
-                        targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
-
-                        break;  // jump out of target tracking loop if we find a target.
-                    }
-                }
-            }
 
             // Tell the driver what we see, and what to do.
             if (targetFound) {
@@ -183,9 +160,28 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
                 telemetry.addData("Target", " %s", targetName);//CONSUME
                 telemetry.addData("Range",  "%5.1f inches", targetRange);
                 telemetry.addData("Bearing","%3.0f degrees", targetBearing);
+                telemetry.addData("targetX:",targetX);
+                telemetry.addData("targetY:",targetY);
+                move(0.5,'f',Math.abs(targetX) - 4);
+
+                move(0.5,'r',Math.abs(targetY) -2 );
+
+                move(0.5,'l',80);
+                rotate(0.5,'r',90);//feel your eye twitcv
+
+
+                targetIsFound(targetsFreightFrenzy);
+                move(0.5,'f',Math.abs(targetX) - 4);
+
+                move(0.5,'r',Math.abs(targetY) -2 );
+
+
+                break;
             } else {
                 telemetry.addData(">","Drive using joystick to find target\n");
+                move(0.5,'f',3);
             }
+
 
             // Drive to target Automatically if Left Bumper is being pressed, AND we have found a target.
 //            if (gamepad1.left_bumper && targetFound) {
@@ -217,13 +213,44 @@ public class ConceptVuforiaDriveToTargetWebcam extends rebornDriving
             sleep(10);
 
             //if (Math.abs(targetBearing) <= 2){
-            move(0.5,'f',targetX);
 
-            move(0.5,'r',targetY - 2);
 
             //move(0.5, 'f', targetRange);
 
 
         }
+
+    }
+
+    private boolean targetIsFound (VuforiaTrackables targetsFreightFrenzy){
+        boolean targetFound = false;
+        for (VuforiaTrackable trackable : targetsFreightFrenzy)
+        {
+            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible())//LEARN
+            {
+                targetPose = ((VuforiaTrackableDefaultListener)trackable.getListener()).getVuforiaCameraFromTarget();
+
+                // if we have a target, process the "pose" to determine the position of the target relative to the robot.
+                if (targetPose != null)
+                {
+                    targetFound = true;
+                    targetName  = trackable.getName();
+                    VectorF trans = targetPose.getTranslation();
+
+                    // Extract the X & Y components of the offset of the target relative to the robot
+                    targetX = trans.get(0) / MM_PER_INCH; // Image X axis
+                    targetY = trans.get(2) / MM_PER_INCH; // Image Z axis
+
+                    // target range is based on distance from robot positiadon to origin (right triangle).
+                    targetRange = Math.hypot(targetX, targetY);
+
+                    // target bearing is based on angle formed between the X axis and the target range line
+                    targetBearing = Math.toDegrees(Math.asin(targetX / targetRange));
+
+                    break;  // jump out of target tracking loop if we find a target.
+                }
+            }
+        }
+        return targetFound;
     }
 }
