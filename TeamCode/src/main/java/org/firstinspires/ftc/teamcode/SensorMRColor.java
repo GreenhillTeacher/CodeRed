@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -52,8 +52,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: MR Color", group = "Sensor")
-@Disabled
-public class SensorMRColor extends LinearOpMode {
+
+public class SensorMRColor extends rebornDriving {
 
   ColorSensor colorSensor;    // Hardware Device Object
 
@@ -61,7 +61,7 @@ public class SensorMRColor extends LinearOpMode {
   @Override
   public void runOpMode() {
 
-    //robot.init(hardwareMap);
+    robot.init(hardwareMap);
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F,0F,0F};
@@ -118,6 +118,21 @@ public class SensorMRColor extends LinearOpMode {
       telemetry.addData("Green", colorSensor.green());
       telemetry.addData("Blue ", colorSensor.blue());
       telemetry.addData("Hue", hsvValues[0]);
+
+      if(colorSensor.red() > 30 && colorSensor.green() < 0.2 * colorSensor.red() && colorSensor.blue() < 0.2 * colorSensor.red()) {
+        motorStop();
+        telemetry.addData("RED FOUND: amount is",colorSensor.red());
+      }
+      else {
+        //move(0.5, 'f', 3);
+        robot.frontLeft.setPower(0.2);
+        robot.frontRight.setPower(0.2);
+        robot.backLeft.setPower(0.2);
+        robot.backRight.setPower(0.2);
+
+      }
+
+
 
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument
