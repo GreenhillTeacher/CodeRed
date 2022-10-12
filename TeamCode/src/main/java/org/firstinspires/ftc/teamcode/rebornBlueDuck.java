@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -13,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
 import java.util.List;
 
 @Autonomous(name="Blue - Duck Detect and Place", group="Reborn Blue")
@@ -31,38 +28,31 @@ public class rebornBlueDuck extends rebornDriving {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-
     final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)
     //  The GAIN constants set the relationship between the measured position error,
     //  and how much power is applied to the drive motors.  Drive = Error * Gain
     //  Make these values smaller for smoother control.
     final double SPEED_GAIN = 0.02;   //  Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double TURN_GAIN = 0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
     final double MM_PER_INCH = 25.40;   //  Metric conversion
     private static final String VUFORIA_KEY = "AU2ZVVD/////AAABmWSnWzlvdECDh0CawWRMh50kTOol0b5i6u8TJ9mYkhAojzXIoOAOVA7kFQAmVX8CWYdcpRjhQUnpcWViN2ckinEOTF1xTzWbTv6pqSuYaUgSwNKQUy1nipKxdEpTCv6BW+17wHICNqIJVCblf5CCvgg79QnDk1G503iGNlmz8a9wRZIYadFQzWBK7Ps/sWMliCnRgUe5KAVfWAs/K+0DzveH/Gq82hE9E1GIXusodMsZJzGlmQKEWcIgfzuWYzzlYdJpw6eNPSVIK5lisdkBfkzJbsWSIsOuKJOzJMwB894qq7OB/nMJCaWT3qseZamRZKm0wpgVng4x0gW/ZccKzl/4jDDeuJOa2K4MSfCDTPn+";
     OpenGLMatrix targetPose = null;
     String targetName = "";
-
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
-
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
-
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
-
         initVuforia();
         initTfod();
-
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
          * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
@@ -78,13 +68,10 @@ public class rebornBlueDuck extends rebornDriving {
             // (typically 16/9).
             tfod.setZoom(1, 32.0/9.0);
         }
-
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
-
-
         //=======================
         //--actual code----------
         //=======================--------------------------------------------------------
@@ -95,7 +82,6 @@ public class rebornBlueDuck extends rebornDriving {
         telemetry.update();
         strafeMove(40, false);
         sleep(2000);
-
         int lateralMoveDistance = 25;
         int angleAmount = 95;
         switch(duckLevel){//moves to the alliance shipping hub based on what it reads
@@ -120,8 +106,6 @@ public class rebornBlueDuck extends rebornDriving {
             default:
                 break;
         }
-
-
         robot.clawServo.setPosition(0.5);
         sleep(200);
         robot.clawServo.setPosition(.15);
@@ -132,14 +116,11 @@ public class rebornBlueDuck extends rebornDriving {
         if (duckLevel!=3) {
             levelLift('t');
         }
-
         rotate(0.5, 'r', 90);
         move(.3, 'l', 4);
-
         //this section is specifically to deliver ducks.
         move(0.4,'f',45);
         move (.2, 'r', 5);//untested
-
         robot.duckSpinner.setPower(-.1);
         sleep(2000);
         robot.duckSpinner.setPower(0);
@@ -150,18 +131,11 @@ public class rebornBlueDuck extends rebornDriving {
         distanceMove(65, false);
 
         move(0.4,'r',10);
-
-
-
-
-    }
-
+}
     private int duckDetection (){
         long programTime = System.currentTimeMillis();
         long waitTime = 5000L;
-
         while (opModeIsActive()) {
-
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -186,9 +160,7 @@ public class rebornBlueDuck extends rebornDriving {
                             }
                         }
                         i++;
-
-
-                    }
+                   }
                     telemetry.update();
                 }
                 else {
